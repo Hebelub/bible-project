@@ -1,5 +1,7 @@
 # Bible Project 📖
 
+This is a test to learn Git :)
+
 An open-source, interactive Bible study platform designed to make biblical knowledge accessible and engaging through modern web technologies.
 
 ## 🌟 Project Vision

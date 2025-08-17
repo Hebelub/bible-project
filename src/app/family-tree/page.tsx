@@ -1,6 +1,9 @@
-import Link from 'next/link'
+'use client';
 
-// Comprehensive sample data for Jacob and his family with multiple generations
+import Link from 'next/link';
+import { useState } from 'react';
+
+// Import the same sample data from the genealogy page
 const sampleData = [
   // Abraham's Generation
   {
@@ -419,12 +422,11 @@ const sampleData = [
   }
 ];
 
-// Helper function to find children
+// Helper functions
 const findChildren = (personId: number) => {
   return sampleData.filter(person => person.fatherId === personId || person.motherId === personId);
 };
 
-// Helper function to find spouses
 const findSpouses = (personId: number) => {
   const children = findChildren(personId);
   const spouseIds = new Set<number>();
@@ -440,7 +442,6 @@ const findSpouses = (personId: number) => {
   return sampleData.filter(person => spouseIds.has(person.id));
 };
 
-// Helper function to find parents
 const findParents = (personId: number) => {
   const person = sampleData.find(p => p.id === personId);
   if (!person) return { father: null, mother: null };
@@ -449,18 +450,6 @@ const findParents = (personId: number) => {
   const mother = person.motherId ? sampleData.find(p => p.id === person.motherId) : null;
   
   return { father, mother };
-};
-
-// Helper function to find siblings
-const findSiblings = (personId: number) => {
-  const person = sampleData.find(p => p.id === personId);
-  if (!person) return [];
-  
-  return sampleData.filter(p => 
-    p.id !== personId && 
-    ((p.fatherId === person.fatherId && person.fatherId) ?? 
-     (p.motherId === person.motherId && person.motherId))
-  );
 };
 
 // PersonLink component for clickable relationships
@@ -473,24 +462,125 @@ const PersonLink = ({ person, className = "" }: { person: { id: number; name: st
   </Link>
 );
 
-export default function GenealogyPage() {
+// Family Tree Node Component
+const FamilyTreeNode = ({ person, level = 0, maxLevel = 3 }: { 
+  person: any; 
+  level?: number; 
+  maxLevel?: number;
+}) => {
+  const children = findChildren(person.id);
+  const spouses = findSpouses(person.id);
+  const { father, mother } = findParents(person.id);
+  
+  if (level >= maxLevel) {
+    return (
+      <div className="text-center">
+        <div className="bg-gray-100 rounded-lg p-2 text-xs text-gray-600">
+          +{children.length} more generations
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      {/* Person Card */}
+      <div className="bg-white border-2 border-blue-200 rounded-lg p-3 mb-2 shadow-md hover:shadow-lg transition-shadow min-w-[120px] text-center">
+        <div className="text-lg mb-1">👤</div>
+        <div className="font-semibold text-sm text-gray-800 mb-1">{person.name}</div>
+        <div className="text-xs text-gray-500">{person.birthDate.split(' ')[2]}</div>
+      </div>
+      
+      {/* Spouse Line */}
+      {spouses.length > 0 && (
+        <div className="w-px h-4 bg-pink-300 mb-2"></div>
+      )}
+      
+      {/* Spouses */}
+      {spouses.map((spouse) => (
+        <div key={spouse.id} className="flex flex-col items-center mb-2">
+          <div className="bg-white border-2 border-pink-200 rounded-lg p-2 shadow-md hover:shadow-lg transition-shadow min-w-[100px] text-center">
+            <div className="text-sm mb-1">💕</div>
+            <div className="font-medium text-xs text-gray-800">{spouse.name}</div>
+          </div>
+        </div>
+      ))}
+      
+      {/* Children with Parent Info */}
+      {children.length > 0 && (
+        <>
+          <div className="w-px h-4 bg-blue-300 mb-2"></div>
+          <div className="flex space-x-4">
+            {children.map((child) => {
+              const childFather = child.fatherId ? sampleData.find(p => p.id === child.fatherId) : null;
+              const childMother = child.motherId ? sampleData.find(p => p.id === child.motherId) : null;
+              
+              return (
+                <div key={child.id} className="flex flex-col items-center">
+                  {/* Child Card with Parent Info */}
+                  <div className="bg-white border-2 border-green-200 rounded-lg p-2 mb-2 shadow-md hover:shadow-lg transition-shadow min-w-[140px] text-center">
+                    <div className="text-sm mb-1">👶</div>
+                    <div className="font-medium text-xs text-gray-800 mb-1">{child.name}</div>
+                    <div className="text-xs text-gray-500">
+                      {childFather && childMother ? (
+                        <span>Son of {childFather.name} & {childMother.name}</span>
+                      ) : childFather ? (
+                        <span>Son of {childFather.name}</span>
+                      ) : childMother ? (
+                        <span>Daughter of {childMother.name}</span>
+                      ) : (
+                        <span>Child</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Recursive call for next generation */}
+                  <FamilyTreeNode person={child} level={level + 1} maxLevel={maxLevel} />
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// Main Family Tree Component
+const FamilyTree = ({ rootPersonId, maxLevel = 3 }: { rootPersonId: number; maxLevel?: number }) => {
+  const rootPerson = sampleData.find(p => p.id === rootPersonId);
+  if (!rootPerson) return null;
+
+  return (
+    <div className="flex justify-center">
+      <FamilyTreeNode person={rootPerson} maxLevel={maxLevel} />
+    </div>
+  );
+};
+
+export default function FamilyTreePage() {
+  const [selectedRoot, setSelectedRoot] = useState(100); // Start with Abraham
+  const [maxLevels, setMaxLevels] = useState(3);
+
+  const rootOptions = [
+    { id: 100, name: "Abraham", description: "Patriarch of the Israelites" },
+    { id: 2, name: "Isaac", description: "Son of Abraham, father of Jacob" },
+    { id: 1, name: "Jacob (Israel)", description: "Father of the 12 tribes" },
+    { id: 13, name: "Judah", description: "Ancestor of King David and Jesus" },
+    { id: 14, name: "Joseph", description: "Son of Jacob, ruler in Egypt" }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Genealogy Explorer
+            Family Tree Explorer
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Explore the family trees and relationships of biblical figures. Discover connections, 
-            marriages, and the rich history of God&apos;s chosen people.
-          </p>
-          <p className="text-lg text-gray-500 mt-4">
-            Currently showing {sampleData.length} biblical figures across multiple generations
-          </p>
-          <p className="text-sm text-gray-400 mt-2">
-            💡 Click on any card or relationship to explore individual details
+            Visualize the family relationships and genealogical connections of biblical figures. 
+            Explore the rich tapestry of God&apos;s chosen people through an interactive family tree.
           </p>
         </div>
 
@@ -506,10 +596,10 @@ export default function GenealogyPage() {
             Back to Home
           </Link>
           <Link 
-            href="/family-tree"
+            href="/genealogy"
             className="text-blue-600 hover:text-blue-800 font-semibold mr-8"
           >
-            Family Tree
+            Genealogy Cards
           </Link>
           <Link 
             href="/about"
@@ -519,143 +609,97 @@ export default function GenealogyPage() {
           </Link>
         </div>
 
-        {/* People Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sampleData.map((person) => {
-            const children = findChildren(person.id);
-            const spouses = findSpouses(person.id);
-            const { father, mother } = findParents(person.id);
-            const siblings = findSiblings(person.id);
-            
-            return (
-              <Link 
-                key={person.id} 
-                href={`/genealogy/${person.id}`}
-                className="block"
+        {/* Controls */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-12 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Root Person Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Start Family Tree From:
+              </label>
+              <select
+                value={selectedRoot}
+                onChange={(e) => setSelectedRoot(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               >
-                <div className="bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer border-2 border-transparent hover:border-blue-200">
-                  {/* Person Header */}
-                  <div className="text-center mb-6">
-                    <div className="text-4xl mb-3">👤</div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{person.name}</h3>
-                    <div className="text-sm text-gray-500">
-                      {person.birthDate} - {person.deathDate}
-                    </div>
-                  </div>
+                {rootOptions.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name} - {option.description}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                  {/* Parents */}
-                  {(father ?? mother) && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2">Parents:</h4>
-                      <div className="space-y-1">
-                        {father && (
-                          <div className="text-sm text-gray-600">
-                            <span className="font-medium">Father:</span> {father.name}
-                          </div>
-                        )}
-                        {mother && (
-                          <div className="text-sm text-gray-600">
-                            <span className="font-medium">Mother:</span> {mother.name}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+            {/* Max Levels Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Maximum Generations to Show:
+              </label>
+              <select
+                value={maxLevels}
+                onChange={(e) => setMaxLevels(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value={2}>2 Generations</option>
+                <option value={3}>3 Generations</option>
+                <option value={4}>4 Generations</option>
+                <option value={5}>5 Generations</option>
+              </select>
+            </div>
+          </div>
 
-                  {/* Siblings */}
-                  {siblings.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2">
-                        Siblings ({siblings.length}):
-                      </h4>
-                      <div className="space-y-1">
-                        {siblings.slice(0, 3).map((sibling) => (
-                          <div key={sibling.id} className="text-sm text-gray-600">
-                            👥 {sibling.name}
-                          </div>
-                        ))}
-                        {siblings.length > 3 && (
-                          <div className="text-sm text-gray-500">
-                            +{siblings.length - 3} more...
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+          <div className="mt-4 text-sm text-gray-600">
+            💡 <strong>Tip:</strong> The family tree now shows specific parent-child relationships. 
+            Children cards display their exact parentage. Click on any person to view their detailed genealogy card.
+          </div>
+        </div>
 
-                  {/* Spouses */}
-                  {spouses.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2">
-                        {spouses.length === 1 ? 'Spouse:' : 'Spouses:'}
-                      </h4>
-                      <div className="space-y-1">
-                        {spouses.map((spouse) => (
-                          <div key={spouse.id} className="text-sm text-gray-600">
-                            💕 {spouse.name}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+        {/* Family Tree Display */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-12 overflow-x-auto">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            Family Tree of {sampleData.find(p => p.id === selectedRoot)?.name}
+          </h2>
+          
+          <div className="min-w-full">
+            <FamilyTree rootPersonId={selectedRoot} maxLevel={maxLevels} />
+          </div>
+        </div>
 
-                  {/* Children */}
-                  {children.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2">
-                        Children ({children.length}):
-                      </h4>
-                      <div className="space-y-1">
-                        {children.slice(0, 4).map((child) => (
-                          <div key={child.id} className="text-sm text-gray-600">
-                            👶 {child.name}
-                          </div>
-                        ))}
-                        {children.length > 4 && (
-                          <div className="text-sm text-gray-500">
-                            +{children.length - 4} more...
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* General Information */}
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-gray-900 mb-2">About:</h4>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {person.generalInfo}
-                    </p>
-                  </div>
-
-                  {/* Biblical References */}
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-gray-900 mb-2">Biblical References:</h4>
-                    <p className="text-sm text-gray-500">
-                      {person.biblicalReferences}
-                    </p>
-                  </div>
-
-                  {/* Click indicator */}
-                  <div className="text-center mt-4 pt-4 border-t border-gray-100">
-                    <div className="text-xs text-blue-500 font-medium">
-                      Click to view details →
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+        {/* Legend */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-4xl mx-auto">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">Tree Legend</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-blue-200 border-2 border-blue-300 rounded mr-2"></div>
+              <span>Main Family Members</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-pink-200 border-2 border-pink-300 rounded mr-2"></div>
+              <span>Spouses</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-green-200 border-2 border-green-300 rounded mr-2"></div>
+              <span>Children (with parent info)</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-gray-100 rounded mr-2"></div>
+              <span>Generation Limit Reached</span>
+            </div>
+          </div>
+          <div className="mt-4 text-sm text-gray-600">
+            <strong>Note:</strong> The family tree now shows specific parent-child relationships. 
+            Children cards display "Son of [Father] & [Mother]" or similar information. 
+            For complete family details, visit the <Link href="/genealogy" className="text-blue-600 hover:underline">Genealogy Cards</Link> page.
+          </div>
         </div>
 
         {/* Footer */}
         <div className="text-center mt-16">
           <p className="text-gray-600">
-            This comprehensive genealogy includes all 12 sons of Israel, multiple generations, 
-            and demonstrates the rich family connections throughout biblical history.
+            This interactive family tree visualizes the biblical genealogy from Abraham through the 12 tribes of Israel.
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            Navigate through the family tree by clicking on any person or relationship
+            Explore different starting points and generation depths to discover various family connections
           </p>
         </div>
       </div>

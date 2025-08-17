@@ -512,6 +512,12 @@ export default async function PersonPage({ params }: PageProps) {
             Home
           </Link>
           <Link 
+            href="/family-tree"
+            className="text-blue-600 hover:text-blue-800 font-semibold mr-8"
+          >
+            Family Tree
+          </Link>
+          <Link 
             href="/about"
             className="text-blue-600 hover:text-blue-800 font-semibold"
           >
