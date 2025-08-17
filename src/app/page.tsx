@@ -1,53 +1,241 @@
 import Link from "next/link";
 
-import { LatestPost } from "~/app/_components/post";
-import { api, HydrateClient } from "~/trpc/server";
-
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-
-  void api.post.getLatest.prefetch();
-
+export default function Home() {
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Navigation */}
+      <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="text-3xl">📖</div>
+              <span className="text-xl font-bold text-gray-900">Bible Project</span>
+            </div>
+            <div className="hidden md:flex items-center space-x-8">
+              <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium">
+                Home
+              </Link>
+              <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium">
+                About
+              </Link>
+              <a href="https://github.com/hebelub/bible-project" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="text-gray-700 hover:text-blue-600 font-medium">
+                GitHub
+              </a>
+            </div>
+            <div className="md:hidden">
+              <button className="text-gray-700 hover:text-blue-600">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-20 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6">
+            Interactive Bible
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+              Study Platform
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Discover the Bible like never before with our interactive platform. 
+            Explore timelines, genealogies, and deep dive into topics with modern technology.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              href="/about"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition-all"
+            >
+              Learn More
+            </Link>
+            <a 
+              href="https://github.com/hebelub/bible-project" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-white text-gray-900 border-2 border-gray-300 px-8 py-4 rounded-lg font-semibold text-lg hover:border-blue-600 hover:text-blue-600 transition-colors"
+            >
+              View on GitHub
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="container mx-auto px-4 py-20">
+        <h2 className="text-4xl font-bold text-gray-900 text-center mb-16">
+          Powerful Features for Bible Study
+        </h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
+            <div className="text-5xl mb-6">🕐</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Timeline of Events</h3>
+            <p className="text-gray-600 mb-6">
+              Navigate through biblical history with our interactive timeline. 
+              See events in chronological order with rich historical context.
+            </p>
+            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
+            <div className="text-5xl mb-6">👥</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Genealogy Explorer</h3>
+            <p className="text-gray-600 mb-6">
+              Explore family trees and relationships between biblical figures. 
+              Understand connections that span generations.
+            </p>
+            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
+            <div className="text-5xl mb-6">🔍</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Topic Explorer</h3>
+            <p className="text-gray-600 mb-6">
+              Deep dive into specific themes, symbolism, and concepts. 
+              Find cross-references and detailed explanations.
+            </p>
+            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
+            <div className="text-5xl mb-6">📚</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Interactive Reading</h3>
+            <p className="text-gray-600 mb-6">
+              Enhanced Bible reading with contextual information, 
+              cross-references, and interactive elements.
+            </p>
+            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
+            <div className="text-5xl mb-6">📊</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Knowledge Database</h3>
+            <p className="text-gray-600 mb-6">
+              Comprehensive biblical knowledge base that&apos;s easy to navigate 
+              and contribute to. Community-driven content.
+            </p>
+            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
+            <div className="text-5xl mb-6">🌐</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Open Source</h3>
+            <p className="text-gray-600 mb-6">
+              Built by the community, for the community. 
+              Contribute, learn, and grow together.
+            </p>
+            <div className="text-blue-600 font-semibold">Active Development →</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Technology Section */}
+      <section className="bg-white py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-gray-900 text-center mb-16">
+            Built with Modern Technology
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">⚛️</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Next.js 15</h3>
+              <p className="text-gray-600">Modern React framework with App Router</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🔷</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">TypeScript</h3>
+              <p className="text-gray-600">Type-safe development experience</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🎨</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Tailwind CSS</h3>
+              <p className="text-gray-600">Utility-first CSS framework</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🗄️</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Drizzle ORM</h3>
+              <p className="text-gray-600">Type-safe database operations</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold text-white mb-6">
+            Ready to Explore?
+          </h2>
+                      <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+              Join us in making the Bible more accessible and engaging. 
+              Whether you&apos;re a developer, scholar, or simply passionate about biblical knowledge, 
+              there&apos;s a place for you in our community.
+            </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              href="/about"
+              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors"
+            >
+              Learn More About Us
+            </Link>
+            <a 
+              href="https://github.com/hebelub/bible-project" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors"
+            >
+              Contribute on GitHub
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <div className="text-2xl">📖</div>
+            <span className="text-xl font-bold">Bible Project</span>
+          </div>
+          <p className="text-gray-400 mb-6">
+            Making the Bible interactive, accessible, and knowledge-rich through modern technology.
+          </p>
+          <div className="flex justify-center space-x-6">
+            <Link href="/" className="text-gray-400 hover:text-white transition-colors">
+              Home
+            </Link>
+            <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
+              About
+            </Link>
+            <a href="https://github.com/hebelub/bible-project" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               className="text-gray-400 hover:text-white transition-colors">
+              GitHub
+            </a>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gray-800">
+            <p className="text-gray-500 text-sm">
+              © 2024 Bible Project. Open source and community-driven.
             </p>
           </div>
-
-          <LatestPost />
         </div>
-      </main>
-    </HydrateClient>
+      </footer>
+    </main>
   );
 }

@@ -1,29 +1,150 @@
-# Create T3 App
+# Bible Project 📖
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+An open-source, interactive Bible study platform designed to make biblical knowledge accessible and engaging through modern web technologies.
 
-## What's next? How do I make an app with this?
+## 🌟 Project Vision
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+This project aims to transform traditional Bible reading into an interactive, knowledge-rich experience. Our goal is to help users gain deeper understanding of specific topics, events, and symbolism found throughout the Bible through innovative digital tools and comprehensive resources.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## ✨ Key Features
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+### 📚 Interactive Bible Reading
+- Enhanced reading experience with contextual information
+- Cross-references and related passages
+- Search and filter capabilities
 
-## Learn More
+### 🕐 Timeline of Events
+- Chronological view of biblical events
+- Historical context and background information
+- Interactive timeline navigation
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### 👥 Genealogy Explorer
+- Family trees and relationships
+- Interactive family connections
+- Historical context for biblical figures
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### 🔍 Topic Explorer
+- Deep dives into specific themes and concepts
+- Symbolism and allegory explanations
+- Cross-referenced topic studies
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### 📊 Knowledge Database
+- Comprehensive biblical knowledge base
+- Easy-to-navigate topic organization
+- Contributable and expandable content
 
-## How do I deploy this?
+## 🛠️ Tech Stack
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: SQLite (LibSQL) with Drizzle ORM
+- **API**: tRPC for type-safe API calls
+- **Package Manager**: PNPM
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- PNPM (recommended) or npm
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd bible-project
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your configuration
+   ```
+
+4. **Set up the database**
+   ```bash
+   pnpm db:generate
+   pnpm db:push
+   ```
+
+5. **Start the development server**
+   ```bash
+   pnpm dev
+   ```
+
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 📁 Project Structure
+
+```
+bible-project/
+├── src/
+│   ├── app/                 # Next.js App Router pages
+│   ├── server/              # Backend API and database
+│   │   ├── api/            # tRPC API routes
+│   │   └── db/             # Database schema and connection
+│   ├── trpc/                # tRPC client configuration
+│   └── styles/              # Global styles
+├── public/                  # Static assets
+└── drizzle.config.ts        # Database configuration
+```
+
+## 🗄️ Database Commands
+
+- `pnpm db:generate` - Generate database migrations
+- `pnpm db:push` - Push schema changes to database
+- `pnpm db:migrate` - Run database migrations
+- `pnpm db:studio` - Open Drizzle Studio for database management
+
+## 🧪 Development Commands
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm lint` - Run ESLint
+- `pnpm format:write` - Format code with Prettier
+- `pnpm typecheck` - Run TypeScript type checking
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Make your changes**
+4. **Commit your changes** (`git commit -m 'Add amazing feature'`)
+5. **Push to the branch** (`git push origin feature/amazing-feature`)
+6. **Open a Pull Request**
+
+### Contribution Areas
+- Content creation and curation
+- Feature development
+- Bug fixes and improvements
+- Documentation updates
+- UI/UX enhancements
+
+## 📝 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🙏 Acknowledgments
+
+- The open-source community for the amazing tools and libraries
+- Biblical scholars and researchers whose work inspires this project
+- Contributors and supporters of this project
+
+## �� Contact & Support
+
+- **Issues**: [GitHub Issues](<your-repo-url>/issues)
+- **Discussions**: [GitHub Discussions](<your-repo-url>/discussions)
+- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
+
+---
+
+**Let's make the Bible more accessible and engaging together!** 🙌
