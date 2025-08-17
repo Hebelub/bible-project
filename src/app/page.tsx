@@ -21,6 +21,9 @@ export default function Home() {
               <Link href="/genealogy" className="text-gray-700 hover:text-blue-600 font-medium">
                 Genealogy
               </Link>
+              <Link href="/family-tree" className="text-gray-700 hover:text-blue-600 font-medium">
+                Family Tree
+              </Link>
               <a href="https://github.com/hebelub/bible-project" 
                  target="_blank" 
                  rel="noopener noreferrer"
@@ -94,7 +97,14 @@ export default function Home() {
               Explore family trees and relationships between biblical figures. 
               Understand connections that span generations.
             </p>
-            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+            <div className="flex space-x-2">
+              <Link href="/genealogy" className="text-blue-600 font-semibold hover:underline">
+                View Cards →
+              </Link>
+              <Link href="/family-tree" className="text-blue-600 font-semibold hover:underline">
+                View Tree →
+              </Link>
+            </div>
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
@@ -227,6 +237,9 @@ export default function Home() {
             </Link>
             <Link href="/genealogy" className="text-gray-400 hover:text-white transition-colors">
               Genealogy
+            </Link>
+            <Link href="/family-tree" className="text-gray-400 hover:text-white transition-colors">
+              Family Tree
             </Link>
             <a href="https://github.com/hebelub/bible-project" 
                target="_blank" 
