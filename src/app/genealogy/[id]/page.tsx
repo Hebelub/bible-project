@@ -1,3 +1,6 @@
+'use client'
+
+import { use } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { genealogyData, findChildren, findSpouses, findParents, findSiblings } from '~/data/genealogy'
@@ -21,8 +24,8 @@ interface PageProps {
   }>;
 }
 
-export default async function PersonPage({ params }: PageProps) {
-  const { id } = await params;
+export default function PersonPage({ params }: PageProps) {
+  const { id } = use(params);
   const personId = parseInt(id);
   const person = sampleData.find(p => p.id === personId);
 
@@ -173,9 +176,36 @@ export default async function PersonPage({ params }: PageProps) {
             {/* Biblical References */}
             <div className="bg-yellow-50 rounded-xl p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Biblical References</h3>
-              <p className="text-lg text-gray-700">
-                {person.biblicalReferences}
-              </p>
+              <div className="text-lg text-gray-700">
+                {person.biblicalReferences.split(',').map((ref, index) => {
+                  const trimmedRef = ref.trim();
+                  // Simple parsing for common formats like "Genesis 1:26-5:5" or "Ruth 1:1-3"
+                  const execResult = /^(\w+)\s+(\d+):(\d+)(?:-(\d+))?$/.exec(trimmedRef);
+                  if (execResult) {
+                    const [, book, chapter, verse] = execResult;
+                    if (book && chapter && verse) {
+                      const href = `/bible/${book.toLowerCase()}/${chapter}/${verse}`;
+                      return (
+                        <span key={index}>
+                          <Link
+                            href={href}
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            {trimmedRef}
+                          </Link>
+                          {index < person.biblicalReferences.split(',').length - 1 ? ', ' : ''}
+                        </span>
+                      );
+                    }
+                  }
+                  return (
+                    <span key={index}>
+                      {trimmedRef}
+                      {index < person.biblicalReferences.split(',').length - 1 ? ', ' : ''}
+                    </span>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
