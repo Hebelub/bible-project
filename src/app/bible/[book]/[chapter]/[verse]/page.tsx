@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
@@ -49,7 +49,7 @@ const getMockVerse = (book: string, chapter: number, verse: number): BibleVerse 
     }
   }
 
-  const verseText = verseTexts[book.toLowerCase()]?.[chapter]?.[verse] || 
+  const verseText = verseTexts[book.toLowerCase()]?.[chapter]?.[verse] ?? 
     `This is verse ${verse} from ${book} chapter ${chapter}. In a real implementation, this would contain the actual biblical text.`
 
   return {
@@ -78,7 +78,7 @@ export default function BibleVersePage({ params }: PageProps) {
       const verseNum = parseInt(resolved.verse)
       
       if (isNaN(chapter) || isNaN(verseNum)) {
-        router.push('/bible')
+        void router.push('/bible')
         return
       }
       
@@ -86,7 +86,7 @@ export default function BibleVersePage({ params }: PageProps) {
       setVerse(verseData)
     }
     
-    resolveParams()
+    void resolveParams()
   }, [params, router])
 
   if (!resolvedParams || !verse) {
@@ -100,7 +100,8 @@ export default function BibleVersePage({ params }: PageProps) {
     )
   }
 
-  const { book, chapter, verse: verseNum } = resolvedParams
+  const { book, chapter, verse: verseStr } = resolvedParams
+  const verseNum = parseInt(verseStr)
   const bookTitle = book.charAt(0).toUpperCase() + book.slice(1)
 
   return (
@@ -132,7 +133,7 @@ export default function BibleVersePage({ params }: PageProps) {
               <button
                 onClick={() => {
                   const newVerse = Math.max(1, verseNum - 1)
-                  router.push(`/bible/${book}/${chapter}/${newVerse}`)
+                  void router.push(`/bible/${book}/${chapter}/${newVerse}`)
                 }}
                 disabled={verseNum <= 1}
                 className="px-4 py-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -142,7 +143,7 @@ export default function BibleVersePage({ params }: PageProps) {
               <button
                 onClick={() => {
                   const newVerse = verseNum + 1
-                  router.push(`/bible/${book}/${chapter}/${newVerse}`)
+                  void router.push(`/bible/${book}/${chapter}/${newVerse}`)
                 }}
                 className="px-4 py-2 rounded-md font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
@@ -168,7 +169,7 @@ export default function BibleVersePage({ params }: PageProps) {
             </div>
             
             <div className="text-xl text-gray-900 leading-relaxed text-center max-w-3xl mx-auto">
-              "{verse.text}"
+              &ldquo;{verse.text}&rdquo;
             </div>
           </div>
         </div>

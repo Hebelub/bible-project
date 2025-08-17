@@ -2,22 +2,13 @@
 
 import Link from 'next/link'
 import { genealogyData, findChildren, findSpouses, findParents, findSiblings } from '~/data/genealogy'
-import BiblicalReferences from '../_components/BiblicalReferences'
 
 // Use the comprehensive genealogy data from the separate file
 const sampleData = genealogyData;
 
 
 
-// PersonLink component for clickable relationships
-const PersonLink = ({ person, className = "" }: { person: { id: number; name: string }; className?: string }) => (
-  <Link 
-    href={`/genealogy/${person.id}`}
-    className={`text-blue-600 hover:text-blue-800 hover:underline transition-colors ${className}`}
-  >
-    {person.name}
-  </Link>
-);
+
 
 export default function GenealogyPage() {
   return (
