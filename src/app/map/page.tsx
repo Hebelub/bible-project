@@ -288,7 +288,7 @@ export default function MapPage() {
             {locationTypes.map(type => (
               <div key={type} className="flex items-center space-x-2">
                 <span className="text-xl">
-                  {locationsData.find(loc => loc.locationType === type)?.emoji || '📍'}
+                  {locationsData.find(loc => loc.locationType === type)?.emoji ?? '📍'}
                 </span>
                 <span className="text-sm text-gray-700 capitalize">{type}</span>
               </div>

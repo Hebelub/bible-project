@@ -10,7 +10,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/scripts/seed-locations.ts",
+
     "generate-audio": "tsx src/scripts/generate-audio.ts",
     "dev": "next dev",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",

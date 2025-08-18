@@ -193,7 +193,7 @@ export default function BiblePage() {
             <div className="text-5xl mb-6">📖</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Book of Ruth</h3>
             <p className="text-gray-600 mb-6">
-              A beautiful story of loyalty, love, and redemption. Follow Ruth's journey from Moab to Bethlehem.
+gs              A beautiful story of loyalty, love, and redemption. Follow Ruth&apos;s journey from Moab to Bethlehem.
             </p>
             <div className="text-blue-600 font-semibold">Read Now →</div>
           </Link>

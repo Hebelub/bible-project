@@ -6,9 +6,15 @@ const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
 })
 
+interface TTSRequest {
+  text: string
+  voice: string
+  language: string
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    const body = await request.json() as TTSRequest
     const { text, voice, language } = body
 
     if (!text || typeof text !== 'string') {
