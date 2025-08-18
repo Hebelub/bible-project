@@ -18,35 +18,54 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   async function playChapter(index: number) {
+    const chapterNumber = index + 1
     const text = chapters[index]?.trim()
     if (!text) return
     setIsGenerating(true)
     
     try {
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text,
-          voice: 'alloy',
-          language,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const result = await response.json() as { audio: string; format: string }
+      // Try to use pre-generated audio first
+      const preGeneratedUrl = `/audio/ruth-${language}-chapter-${chapterNumber}.mp3`
       
-      if (audioRef.current && result?.audio) {
-        const audioBlob = new Blob([Uint8Array.from(atob(result.audio), c => c.charCodeAt(0))], { type: 'audio/mp3' })
-        const audioUrl = URL.createObjectURL(audioBlob)
-        audioRef.current.src = audioUrl
-        void audioRef.current.play()
-        setIsPlaying(true)
+      // Check if pre-generated audio exists
+      const audioCheck = await fetch(preGeneratedUrl, { method: 'HEAD' })
+      
+      if (audioCheck.ok) {
+        // Use pre-generated audio
+        if (audioRef.current) {
+          audioRef.current.src = preGeneratedUrl
+          void audioRef.current.play()
+          setIsPlaying(true)
+        }
+      } else {
+        // Fallback to generating audio on-demand
+        console.log('Pre-generated audio not found, generating on-demand...')
+        
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text,
+            voice: 'alloy',
+            language,
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const result = await response.json() as { audio: string; format: string }
+        
+        if (audioRef.current && result?.audio) {
+          const audioBlob = new Blob([Uint8Array.from(atob(result.audio), c => c.charCodeAt(0))], { type: 'audio/mp3' })
+          const audioUrl = URL.createObjectURL(audioBlob)
+          audioRef.current.src = audioUrl
+          void audioRef.current.play()
+          setIsPlaying(true)
+        }
       }
     } catch (err) {
       console.error('TTS Error:', err)
