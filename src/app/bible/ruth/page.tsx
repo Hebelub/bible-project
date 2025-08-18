@@ -6,6 +6,7 @@ import { useLanguage } from '~/contexts/LanguageContext'
 import { getRuthText } from '~/lib/language'
 import { LanguageSwitcher } from '~/components/LanguageSwitcher'
 import { TextToSpeech } from '~/components/TextToSpeech'
+import { locationsData } from '~/data/locations'
 
 // Mapping of person names to their genealogy IDs
 const RUTH_PEOPLE: Record<string, number> = {
@@ -38,21 +39,43 @@ const RUTH_PEOPLE: Record<string, number> = {
   'Rahab': 41
 }
 
-// Function to make person names clickable
-function makePeopleClickable(text: string) {
+// Mapping of location names to their location IDs (from Book of Ruth)
+const RUTH_LOCATIONS: Record<string, number> = {
+  'Bethlehem': 1,
+  'Moab': 2,
+  'Judah': 3,
+  'Ephrathah': 4,
+  'Ephrath': 4, // Alternative spelling
+}
+
+// Function to make person names and locations clickable
+function makeTextClickable(text: string) {
   // Split text into words and punctuation
   const parts = text.split(/(\b\w+\b|[^\w\s])/g)
   
   return parts.map((part, index) => {
     // Check if this part is a person name
     const personId = RUTH_PEOPLE[part]
-    
     if (personId) {
       return (
         <Link
           key={index}
           href={`/genealogy/${personId}`}
           className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+        >
+          {part}
+        </Link>
+      )
+    }
+    
+    // Check if this part is a location name
+    const locationId = RUTH_LOCATIONS[part]
+    if (locationId) {
+      return (
+        <Link
+          key={index}
+          href={`/locations/${locationId}`}
+          className="text-green-600 hover:text-green-800 hover:underline font-medium"
         >
           {part}
         </Link>
@@ -177,7 +200,7 @@ export default function RuthPage() {
                      </span>
                      <div className="flex-1">
                        <p className="text-lg text-gray-800 leading-relaxed">
-                         {makePeopleClickable(text)}
+                         {makeTextClickable(text)}
                        </p>
                      </div>
                    </div>
