@@ -30,6 +30,9 @@ export default function Home() {
               <Link href="/locations" className="text-gray-700 hover:text-blue-600 font-medium">
                 Locations
               </Link>
+              <Link href="/map" className="text-gray-700 hover:text-blue-600 font-medium">
+                Map
+              </Link>
               <a href="https://github.com/hebelub/bible-project" 
                  target="_blank" 
                  rel="noopener noreferrer"
@@ -245,9 +248,12 @@ export default function Home() {
             <Link href="/genealogy" className="text-gray-400 hover:text-white transition-colors">
               Genealogy
             </Link>
-            <Link href="/locations" className="text-gray-400 hover:text-white transition-colors">
-              Locations
-            </Link>
+                            <Link href="/locations" className="text-gray-400 hover:text-white transition-colors">
+                  Locations
+                </Link>
+                <Link href="/map" className="text-gray-400 hover:text-white transition-colors">
+                  Map
+                </Link>
             <a href="https://github.com/hebelub/bible-project" 
                target="_blank" 
                rel="noopener noreferrer"

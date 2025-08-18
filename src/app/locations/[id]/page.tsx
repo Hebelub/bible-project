@@ -4,6 +4,28 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { locationsData } from '~/data/locations'
 
+// Function to make biblical references clickable
+function makeReferencesClickable(references: string) {
+  const parts = references.split(/([A-Za-z]+\s+\d+:\d+)/g)
+  
+  return parts.map((part, index) => {
+    // Check if this part is a biblical reference (e.g., "Ruth 1:1")
+    if (/^[A-Za-z]+\s+\d+:\d+$/.test(part)) {
+      return (
+        <Link
+          key={index}
+          href={`/bible/${part.toLowerCase().split(' ')[0]}`}
+          className="text-purple-600 hover:text-purple-800 hover:underline font-medium"
+        >
+          {part}
+        </Link>
+      )
+    }
+    
+    return part
+  })
+}
+
 export default function LocationDetailPage() {
   const params = useParams()
   const id = parseInt(params.id as string)
@@ -84,19 +106,15 @@ export default function LocationDetailPage() {
             <p className="text-gray-700 leading-relaxed">{location.generalInfo}</p>
           </div>
 
-          {/* Biblical References */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Biblical References</h2>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="text-sm text-blue-800">
-                {location.biblicalReferences.split(',').map((reference, index) => (
-                  <div key={index} className="mb-1">
-                    • {reference.trim()}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+                     {/* Biblical References */}
+           <div className="mb-8">
+             <h2 className="text-2xl font-bold text-gray-900 mb-4">Biblical References</h2>
+             <div className="bg-blue-50 p-4 rounded-lg">
+               <div className="text-sm text-blue-800">
+                 {makeReferencesClickable(location.biblicalReferences)}
+               </div>
+             </div>
+           </div>
 
           {/* Important Events */}
           <div className="mb-8">
