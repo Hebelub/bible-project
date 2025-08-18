@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useLanguage } from '~/contexts/LanguageContext'
 import { getRuthText } from '~/lib/language'
 import { LanguageSwitcher } from '~/components/LanguageSwitcher'
+import { TextToSpeech } from '~/components/TextToSpeech'
 
 // Mapping of person names to their genealogy IDs
 const RUTH_PEOPLE: Record<string, number> = {
@@ -69,16 +70,45 @@ export default function RuthPage() {
 
   const chapters = [1, 2, 3, 4]
 
+  // Collect chapter texts for TTS (one string per chapter)
+  const getChapterTexts = () => {
+    const texts: string[] = []
+    for (let chapter = 1; chapter <= 4; chapter++) {
+      const chapterData = ruthText[`chapter${chapter}` as keyof typeof ruthText] as { verses: Record<string, string> }
+      if (chapterData?.verses) {
+        const combined = Object.values(chapterData.verses).join(' ')
+        texts.push(combined)
+      }
+    }
+    return texts
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{ruthText.title}</h1>
-          <div className="flex justify-center mb-4">
-            <LanguageSwitcher />
-          </div>
-        </div>
+                 {/* Header */}
+         <div className="text-center mb-8">
+           <h1 className="text-4xl font-bold text-gray-900 mb-4">{ruthText.title}</h1>
+           <div className="flex justify-center mb-4">
+             <LanguageSwitcher />
+           </div>
+         </div>
+
+         {/* Global Text-to-Speech Controls */}
+         <div className="max-w-4xl mx-auto mb-8">
+           <div className="bg-white rounded-2xl shadow-xl p-6">
+             <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
+               {language === 'no' ? 'Lydbok' : 'Audio Book'}
+             </h2>
+             <TextToSpeech 
+               chapters={getChapterTexts()}
+               startChapter={selectedChapter}
+               language={language}
+               onChapterChange={setSelectedChapter}
+               currentChapter={selectedChapter}
+             />
+           </div>
+         </div>
 
         {/* Navigation */}
         <div className="flex justify-center mb-8">
@@ -137,21 +167,23 @@ export default function RuthPage() {
                </div>
              </div>
 
-             {/* Verses */}
+                          {/* Verses */}
              <div className="space-y-6">
                {Object.entries((ruthText[`chapter${selectedChapter}` as keyof typeof ruthText] as { verses: Record<string, string> })?.verses ?? {}).map(([verseNum, text]) => (
-                <div key={verseNum} className="border-l-4 border-blue-200 pl-6">
-                  <div className="flex items-start space-x-4">
-                    <span className="text-2xl font-bold text-blue-600 min-w-[3rem]">
-                      {verseNum}
-                    </span>
-                                         <p className="text-lg text-gray-800 leading-relaxed">
-                       {makePeopleClickable(text)}
-                     </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                 <div key={verseNum} className="border-l-4 border-blue-200 pl-6">
+                   <div className="flex items-start space-x-4">
+                     <span className="text-2xl font-bold text-blue-600 min-w-[3rem]">
+                       {verseNum}
+                     </span>
+                     <div className="flex-1">
+                       <p className="text-lg text-gray-800 leading-relaxed">
+                         {makePeopleClickable(text)}
+                       </p>
+                     </div>
+                   </div>
+                 </div>
+               ))}
+             </div>
 
             {/* Chapter Navigation */}
             <div className="flex justify-between mt-12 pt-8 border-t border-gray-200">
