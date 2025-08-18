@@ -24,6 +24,9 @@ export default function Home() {
               <Link href="/bible" className="text-gray-700 hover:text-blue-600 font-medium">
                 Bible
               </Link>
+              <Link href="/timeline" className="text-gray-700 hover:text-blue-600 font-medium">
+                Timeline
+              </Link>
               <a href="https://github.com/hebelub/bible-project" 
                  target="_blank" 
                  rel="noopener noreferrer"
@@ -87,7 +90,9 @@ export default function Home() {
               Navigate through biblical history with our interactive timeline. 
               See events in chronological order with rich historical context.
             </p>
-            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+            <Link href="/timeline" className="text-blue-600 font-semibold hover:text-blue-800">
+              Explore Timeline →
+            </Link>
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
@@ -97,7 +102,9 @@ export default function Home() {
               Explore family trees and relationships between biblical figures. 
               Understand connections that span generations.
             </p>
-            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+            <Link href="/genealogy" className="text-blue-600 font-semibold hover:text-blue-800">
+              Explore Genealogy →
+            </Link>
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
