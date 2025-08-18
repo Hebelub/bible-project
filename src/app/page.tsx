@@ -21,6 +21,9 @@ export default function Home() {
               <Link href="/genealogy" className="text-gray-700 hover:text-blue-600 font-medium">
                 Genealogy
               </Link>
+              <Link href="/bible" className="text-gray-700 hover:text-blue-600 font-medium">
+                Bible
+              </Link>
               <a href="https://github.com/hebelub/bible-project" 
                  target="_blank" 
                  rel="noopener noreferrer"
@@ -109,12 +112,14 @@ export default function Home() {
 
           <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
             <div className="text-5xl mb-6">📚</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Interactive Reading</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Bible Reader</h3>
             <p className="text-gray-600 mb-6">
-              Enhanced Bible reading with contextual information, 
-              cross-references, and interactive elements.
+              Read the Bible with multiple translations, search functionality,
+              and easy navigation between books and chapters.
             </p>
-            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+            <Link href="/bible" className="text-blue-600 font-semibold hover:text-blue-700">
+              Read Now →
+            </Link>
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">

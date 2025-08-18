@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { genealogyData, findChildren, findSpouses, findParents, findSiblings } from '~/data/genealogy'
 
@@ -6,15 +8,7 @@ const sampleData = genealogyData;
 
 
 
-// PersonLink component for clickable relationships
-const PersonLink = ({ person, className = "" }: { person: { id: number; name: string }; className?: string }) => (
-  <Link 
-    href={`/genealogy/${person.id}`}
-    className={`text-blue-600 hover:text-blue-800 hover:underline transition-colors ${className}`}
-  >
-    {person.name}
-  </Link>
-);
+
 
 export default function GenealogyPage() {
   return (
@@ -58,19 +52,18 @@ export default function GenealogyPage() {
 
         {/* People Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sampleData.map((person) => {
-            const children = findChildren(person.id);
-            const spouses = findSpouses(person.id);
-            const { father, mother } = findParents(person.id);
-            const siblings = findSiblings(person.id);
-            
-            return (
-              <Link 
-                key={person.id} 
-                href={`/genealogy/${person.id}`}
-                className="block"
-              >
-                <div className="bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer border-2 border-transparent hover:border-blue-200">
+                     {sampleData.map((person) => {
+             const children = findChildren(person.id);
+             const spouses = findSpouses(person.id);
+             const { father, mother } = findParents(person.id);
+             const siblings = findSiblings(person.id);
+             
+             return (
+               <div 
+                 key={person.id} 
+                 className="bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer border-2 border-transparent hover:border-blue-200"
+                 onClick={() => window.location.href = `/genealogy/${person.id}`}
+               >
                   {/* Person Header */}
                   <div className="text-center mb-6">
                     <div className="text-4xl mb-3">👤</div>
@@ -168,21 +161,48 @@ export default function GenealogyPage() {
                   {/* Biblical References */}
                   <div className="mb-4">
                     <h4 className="font-semibold text-gray-900 mb-2">Biblical References:</h4>
-                    <p className="text-sm text-gray-500">
-                      {person.biblicalReferences}
-                    </p>
-                  </div>
-
-                  {/* Click indicator */}
-                  <div className="text-center mt-4 pt-4 border-t border-gray-100">
-                    <div className="text-xs text-blue-500 font-medium">
-                      Click to view details →
+                    <div className="text-sm text-gray-500">
+                                               {person.biblicalReferences.split(',').map((ref, index) => {
+                           const trimmedRef = ref.trim();
+                           // Simple parsing for common formats like "Genesis 1:26-5:5" or "Ruth 1:1-3"
+                           const execResult = /^(\w+)\s+(\d+):(\d+)(?:-(\d+))?$/.exec(trimmedRef);
+                           if (execResult) {
+                             const [, book, chapter, verse] = execResult;
+                             if (book && chapter && verse) {
+                               const href = `/bible/${book.toLowerCase()}/${chapter}/${verse}`;
+                               return (
+                                 <span key={index}>
+                                   <Link
+                                     href={href}
+                                     className="text-blue-600 hover:text-blue-800 hover:underline"
+                                     onClick={(e) => e.stopPropagation()}
+                                   >
+                                     {trimmedRef}
+                                   </Link>
+                                   {index < person.biblicalReferences.split(',').length - 1 ? ', ' : ''}
+                                 </span>
+                               );
+                             }
+                           }
+                           return (
+                             <span key={index}>
+                               {trimmedRef}
+                               {index < person.biblicalReferences.split(',').length - 1 ? ', ' : ''}
+                             </span>
+                           );
+                         })}
                     </div>
                   </div>
-                </div>
-              </Link>
-            );
-          })}
+
+                                     {/* Click indicator */}
+                   <div className="text-center mt-4 pt-4 border-t border-gray-100">
+                     <div className="text-xs text-blue-500 font-medium">
+                       Click to view details →
+                     </div>
+                   </div>
+                 </div>
+               );
+             })}
         </div>
 
         {/* Footer */}

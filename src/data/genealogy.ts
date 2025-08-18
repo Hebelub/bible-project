@@ -1143,6 +1143,128 @@ export const genealogyData: Person[] = [
     deathDate: "Around 1850 BC",
     generalInfo: "Dinah was Jacob's only daughter mentioned in the Bible, born to Leah. She was violated by Shechem, leading to revenge by her brothers Simeon and Levi.",
     biblicalReferences: "Genesis 30:21, 34:1-31, 46:15"
+  },
+
+  // Book of Ruth Genealogy
+  {
+    id: 73,
+    name: "Elimelech",
+    fatherId: null,
+    motherId: null,
+    birthYear: -1200,
+    deathYear: -1150,
+    birthDate: "Around 1200 BC",
+    deathDate: "Around 1150 BC",
+    generalInfo: "Elimelech was a man from Bethlehem in Judah who moved his family to Moab during a famine. He died there, leaving his wife Naomi and two sons.",
+    biblicalReferences: "Ruth 1:1-3"
+  },
+  {
+    id: 74,
+    name: "Naomi",
+    fatherId: null,
+    motherId: null,
+    birthYear: -1200,
+    deathYear: -1100,
+    birthDate: "Around 1200 BC",
+    deathDate: "Around 1100 BC",
+    generalInfo: "Naomi was Elimelech's wife who moved to Moab with her family. After losing her husband and sons, she returned to Bethlehem with her daughter-in-law Ruth.",
+    biblicalReferences: "Ruth 1:2-22, 2:2-3, 2:18-22, 3:1-2, 3:4, 3:6, 3:17-19, 4:3, 4:5, 4:9, 4:14-17"
+  },
+  {
+    id: 75,
+    name: "Mahlon",
+    fatherId: 73,
+    motherId: 74,
+    birthYear: -1180,
+    deathYear: -1140,
+    birthDate: "Around 1180 BC",
+    deathDate: "Around 1140 BC",
+    generalInfo: "Mahlon was Elimelech and Naomi's elder son who married Ruth the Moabite. He died in Moab, leaving Ruth a widow.",
+    biblicalReferences: "Ruth 1:2-5, 4:10"
+  },
+  {
+    id: 76,
+    name: "Kilion",
+    fatherId: 73,
+    motherId: 74,
+    birthYear: -1175,
+    deathYear: -1140,
+    birthDate: "Around 1175 BC",
+    deathDate: "Around 1140 BC",
+    generalInfo: "Kilion was Elimelech and Naomi's younger son who married Orpah the Moabite. He died in Moab, leaving Orpah a widow.",
+    biblicalReferences: "Ruth 1:2-5"
+  },
+  {
+    id: 77,
+    name: "Orpah",
+    fatherId: null,
+    motherId: null,
+    birthYear: -1180,
+    deathYear: -1100,
+    birthDate: "Around 1180 BC",
+    deathDate: "Around 1100 BC",
+    generalInfo: "Orpah was Kilion's Moabite wife. After Kilion's death, she chose to return to her own people in Moab rather than follow Naomi to Bethlehem.",
+    biblicalReferences: "Ruth 1:4, 1:8-15"
+  },
+  {
+    id: 78,
+    name: "Ruth",
+    fatherId: null,
+    motherId: null,
+    birthYear: -1180,
+    deathYear: -1100,
+    birthDate: "Around 1180 BC",
+    deathDate: "Around 1100 BC",
+    generalInfo: "Ruth was Mahlon's Moabite wife who chose to stay with Naomi after her husband's death. She married Boaz and became the great-grandmother of King David.",
+    biblicalReferences: "Ruth 1:4, 1:8-18, 1:22, 2:2-23, 3:1-18, 4:10-18"
+  },
+  {
+    id: 79,
+    name: "Boaz",
+    fatherId: null,
+    motherId: null,
+    birthYear: -1150,
+    deathYear: -1080,
+    birthDate: "Around 1150 BC",
+    deathDate: "Around 1080 BC",
+    generalInfo: "Boaz was a wealthy and influential man from Bethlehem, a relative of Elimelech. He married Ruth and became the grandfather of King David.",
+    biblicalReferences: "Ruth 2:1, 2:4-23, 3:2, 3:7-16, 4:1-22"
+  },
+  {
+    id: 80,
+    name: "Obed",
+    fatherId: 79,
+    motherId: 78,
+    birthYear: -1100,
+    deathYear: -1020,
+    birthDate: "Around 1100 BC",
+    deathDate: "Around 1020 BC",
+    generalInfo: "Obed was the son of Boaz and Ruth, born after their marriage. He was the father of Jesse and grandfather of King David.",
+    biblicalReferences: "Ruth 4:17-22"
+  },
+  {
+    id: 81,
+    name: "Jesse",
+    fatherId: 80,
+    motherId: null,
+    birthYear: -1070,
+    deathYear: -990,
+    birthDate: "Around 1070 BC",
+    deathDate: "Around 990 BC",
+    generalInfo: "Jesse was Obed's son and the father of King David. He lived in Bethlehem and was a descendant of Perez through Boaz.",
+    biblicalReferences: "Ruth 4:17-22, 1 Samuel 16:1-23, 17:12-58, 20:27-31, 22:1-8"
+  },
+  {
+    id: 82,
+    name: "David",
+    fatherId: 81,
+    motherId: null,
+    birthYear: -1040,
+    deathYear: -970,
+    birthDate: "Around 1040 BC",
+    deathDate: "Around 970 BC",
+    generalInfo: "David was Jesse's son and the second king of Israel. He was a man after God's own heart and the ancestor of Jesus Christ. He was born in Bethlehem.",
+    biblicalReferences: "Ruth 4:17-22, 1 Samuel 16:1-23, 2 Samuel, 1 Kings 1:1-2:12, 1 Chronicles, Psalms"
   }
 ];
 
