@@ -24,6 +24,15 @@ export default function Home() {
               <Link href="/bible" className="text-gray-700 hover:text-blue-600 font-medium">
                 Bible
               </Link>
+              <Link href="/timeline" className="text-gray-700 hover:text-blue-600 font-medium">
+                Timeline
+              </Link>
+              <Link href="/locations" className="text-gray-700 hover:text-blue-600 font-medium">
+                Locations
+              </Link>
+              <Link href="/map" className="text-gray-700 hover:text-blue-600 font-medium">
+                Map
+              </Link>
               <a href="https://github.com/hebelub/bible-project" 
                  target="_blank" 
                  rel="noopener noreferrer"
@@ -87,7 +96,9 @@ export default function Home() {
               Navigate through biblical history with our interactive timeline. 
               See events in chronological order with rich historical context.
             </p>
-            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+            <Link href="/timeline" className="text-blue-600 font-semibold hover:text-blue-800">
+              Explore Timeline →
+            </Link>
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
@@ -97,17 +108,21 @@ export default function Home() {
               Explore family trees and relationships between biblical figures. 
               Understand connections that span generations.
             </p>
-            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+            <Link href="/genealogy" className="text-blue-600 font-semibold hover:text-blue-800">
+              Explore Genealogy →
+            </Link>
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
-            <div className="text-5xl mb-6">🔍</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Topic Explorer</h3>
+            <div className="text-5xl mb-6">🗺️</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Biblical Locations</h3>
             <p className="text-gray-600 mb-6">
-              Deep dive into specific themes, symbolism, and concepts. 
-              Find cross-references and detailed explanations.
+              Explore cities, mountains, rivers, and regions mentioned in the Bible. 
+              Discover the geographical context of biblical events.
             </p>
-            <div className="text-blue-600 font-semibold">Coming Soon →</div>
+            <Link href="/locations" className="text-blue-600 font-semibold hover:text-blue-800">
+              Explore Locations →
+            </Link>
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow">
@@ -233,6 +248,12 @@ export default function Home() {
             <Link href="/genealogy" className="text-gray-400 hover:text-white transition-colors">
               Genealogy
             </Link>
+                            <Link href="/locations" className="text-gray-400 hover:text-white transition-colors">
+                  Locations
+                </Link>
+                <Link href="/map" className="text-gray-400 hover:text-white transition-colors">
+                  Map
+                </Link>
             <a href="https://github.com/hebelub/bible-project" 
                target="_blank" 
                rel="noopener noreferrer"

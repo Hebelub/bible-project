@@ -31,7 +31,7 @@ export const persons = createTable(
     updatedAt: d.integer({ mode: "timestamp" }).$onUpdate(() => new Date()),
   }),
   (t) => [
-    index("name_idx").on(t.name),
+    index("person_name_idx").on(t.name),
     index("father_idx").on(t.fatherId),
     index("mother_idx").on(t.motherId),
   ],
@@ -62,6 +62,34 @@ export const relationships = createTable(
 );
 
 /**
+ * Biblical locations table
+ */
+export const locations = createTable(
+  "location",
+  (d) => ({
+    id: d.integer({ mode: "number" }).primaryKey({ autoIncrement: true }),
+    name: d.text({ length: 256 }).notNull(),
+    startYear: d.integer({ mode: "number" }),
+    endYear: d.integer({ mode: "number" }),
+    generalInfo: d.text(), // Detailed information about the location
+    biblicalReferences: d.text(), // Bible verses mentioning this location
+    importantEvents: d.text(), // Key events that happened at this location
+    coordinates: d.text({ length: 100 }), // "latitude,longitude" format
+    emoji: d.text({ length: 10 }), // Emoji to represent the location type
+    locationType: d.text({ length: 50 }), // "city", "mountain", "lake", "desert", etc.
+    createdAt: d
+      .integer({ mode: "timestamp" })
+      .default(sql`(unixepoch())`)
+      .notNull(),
+    updatedAt: d.integer({ mode: "timestamp" }).$onUpdate(() => new Date()),
+  }),
+  (t) => [
+    index("location_name_idx").on(t.name),
+    index("location_type_idx").on(t.locationType),
+  ],
+);
+
+/**
  * Legacy posts table (keeping for compatibility)
  */
 export const posts = createTable(
@@ -75,5 +103,5 @@ export const posts = createTable(
       .notNull(),
     updatedAt: d.integer({ mode: "timestamp" }).$onUpdate(() => new Date()),
   }),
-  (t) => [index("name_idx").on(t.name)],
+  (t) => [index("post_name_idx").on(t.name)],
 );
