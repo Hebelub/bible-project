@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { LanguageProvider } from "~/contexts/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Bible Project - Interactive Bible Study Platform",
@@ -36,7 +37,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable}`}>
       <body suppressHydrationWarning={true}>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <LanguageProvider>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

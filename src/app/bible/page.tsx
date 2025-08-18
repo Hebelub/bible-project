@@ -155,72 +155,56 @@ const RUTH_CHAPTERS: Record<number, BibleVerse[]> = {
 }
 
 export default function BiblePage() {
-  const [selectedChapter, setSelectedChapter] = useState<number>(1)
-
-  const currentVerses = RUTH_CHAPTERS[selectedChapter] ?? []
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="text-gray-600 hover:text-gray-900">
-                ← Back to Home
-              </Link>
-              <h1 className="text-2xl font-bold text-gray-900">Book of Ruth</h1>
-              <span className="text-sm text-gray-500">NIV Translation</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Chapter Navigation */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Chapters</h2>
-          <div className="flex space-x-2">
-            {[1, 2, 3, 4].map((chapter) => (
-              <button
-                key={chapter}
-                onClick={() => setSelectedChapter(chapter)}
-                className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                  selectedChapter === chapter
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Chapter {chapter}
-              </button>
-            ))}
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="container mx-auto px-4 py-16">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+            Bible Explorer
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Explore the Bible with interactive features, multiple translations, and rich context.
+          </p>
         </div>
 
-        {/* Bible Text */}
-        <div className="bg-white rounded-lg shadow">
-          {/* Chapter Header */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Chapter {selectedChapter}
-            </h1>
-            <p className="text-sm text-gray-600 mt-1">
-              Book of Ruth • New International Version
+        {/* Navigation */}
+        <div className="flex justify-center mb-12">
+          <Link 
+            href="/"
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold mr-8"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Home
+          </Link>
+          <Link 
+            href="/genealogy"
+            className="text-blue-600 hover:text-blue-800 font-semibold"
+          >
+            Genealogy
+          </Link>
+        </div>
+
+        {/* Book Selection */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Link href="/bible/ruth" className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-shadow hover:scale-105">
+            <div className="text-5xl mb-6">📖</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Book of Ruth</h3>
+            <p className="text-gray-600 mb-6">
+              A beautiful story of loyalty, love, and redemption. Follow Ruth's journey from Moab to Bethlehem.
             </p>
-          </div>
+            <div className="text-blue-600 font-semibold">Read Now →</div>
+          </Link>
 
-          {/* Verses */}
-          <div className="px-6 py-6">
-            <div className="space-y-4">
-              {currentVerses.map((verse) => (
-                <div key={verse.id} className="flex">
-                  <span className="text-sm font-semibold text-blue-600 mr-3 min-w-[2rem]">
-                    {verse.verse}
-                  </span>
-                  <p className="text-gray-900 leading-relaxed">{makePeopleClickable(verse.text)}</p>
-                </div>
-              ))}
-            </div>
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="text-5xl mb-6">📚</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">More Books</h3>
+            <p className="text-gray-600 mb-6">
+              Additional books and translations will be available soon.
+            </p>
+            <div className="text-gray-400 font-semibold">Coming Soon →</div>
           </div>
         </div>
       </div>
