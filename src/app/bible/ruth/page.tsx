@@ -6,46 +6,63 @@ import { useLanguage } from '~/contexts/LanguageContext'
 import { getRuthText } from '~/lib/language'
 import { LanguageSwitcher } from '~/components/LanguageSwitcher'
 import { TextToSpeech } from '~/components/TextToSpeech'
-import { locationsData } from '~/data/locations'
+
 
 // Mapping of person names to their genealogy IDs
 const RUTH_PEOPLE: Record<string, number> = {
+  // English names
   'Elimelech': 73,
-  'Elimelek': 73, // Norwegian spelling
   'Naomi': 74,
-  'No\'omi': 74, // Norwegian spelling
   'Mahlon': 75,
   'Kilion': 76,
-  'Kiljon': 76, // Norwegian spelling
   'Orpah': 77,
-  'Orpa': 77, // Norwegian spelling
   'Ruth': 40, // Use main genealogy ID
-  'Rut': 40, // Norwegian spelling
   'Boaz': 39, // Use main genealogy ID
-  'Boas': 39, // Norwegian spelling
   'Obed': 41, // Use main genealogy ID
   'Jesse': 42, // Use main genealogy ID
-  'Isai': 42, // Norwegian spelling
   'David': 43, // Use main genealogy ID
   'Perez': 31, // Use main genealogy ID
-  'Peres': 31, // Norwegian spelling
   'Hezron': 33, // Use main genealogy ID
-  'Hesron': 33, // Norwegian spelling
   'Ram': 34, // Use main genealogy ID
   'Amminadab': 35, // Use main genealogy ID
   'Nahshon': 36, // Use main genealogy ID
-  'Nahsjon': 36, // Norwegian spelling
   'Salmon': 37, // Use main genealogy ID
-  'Rahab': 38 // Use main genealogy ID
+  'Rahab': 38, // Use main genealogy ID
+  
+  // Norwegian names
+  'Elimelek': 73,
+  'No\'omi': 74,
+  'Kiljon': 76,
+  'Orpa': 77,
+  'Rut': 40,
+  'Boas': 39,
+  'Isai': 42,
+  'Peres': 31,
+  'Hesron': 33,
+  'Nahsjon': 36,
+  'Rakel': 9,
+  'Lea': 7,
+  'Tamar': 28,
+  'Juda': 13,
+  'Efrata': 4,
+  'Betlehem': 1,
+  'Moab': 2
 }
 
 // Mapping of location names to their location IDs (from Book of Ruth)
 const RUTH_LOCATIONS: Record<string, number> = {
+  // English names
   'Bethlehem': 1,
   'Moab': 2,
   'Judah': 3,
   'Ephrathah': 4,
   'Ephrath': 4, // Alternative spelling
+  
+  // Norwegian names
+  'Betlehem': 1,
+  'Juda': 3,
+  'Efrata': 4,
+  'Efrat': 4
 }
 
 // Function to make person names and locations clickable
