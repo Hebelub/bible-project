@@ -42,11 +42,7 @@ const RUTH_PEOPLE: Record<string, number> = {
   'Nahsjon': 36,
   'Rakel': 9,
   'Lea': 7,
-  'Tamar': 28,
-  'Juda': 13,
-  'Efrata': 4,
-  'Betlehem': 1,
-  'Moab': 2
+  'Tamar': 28
 }
 
 // Mapping of location names to their location IDs (from Book of Ruth)
