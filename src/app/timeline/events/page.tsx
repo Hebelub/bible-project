@@ -25,6 +25,30 @@ interface TimelineLocation {
   coordinates: string
 }
 
+// Gender display component
+const GenderIndicator = ({ gender }: { gender: 'male' | 'female' }) => {
+  const isMale = gender === 'male';
+  return (
+    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+      isMale 
+        ? 'bg-blue-100 text-blue-800 border border-blue-200' 
+        : 'bg-pink-100 text-pink-800 border border-pink-200'
+    }`}>
+      <span className="mr-1">{isMale ? '♂' : '♀'}</span>
+      {isMale ? 'Male' : 'Female'}
+    </div>
+  );
+};
+
+// Person icon component
+const PersonIcon = ({ gender }: { gender: 'male' | 'female' }) => {
+  return (
+    <div className={`text-2xl ${gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+      {gender === 'male' ? '👨' : '👩'}
+    </div>
+  );
+};
+
 export default function TimelineEventsPage() {
   const [startYear, setStartYear] = useState(-4000)
   const [endYear, setEndYear] = useState(100)
@@ -105,97 +129,72 @@ export default function TimelineEventsPage() {
         importantEvents: location.importantEvents,
         coordinates: location.coordinates
       })
-      timelineEvents.push({
-        id: location.id,
-        name: location.name,
-        displayYear: location.endYear,
-        eventType: 'end',
-        startYear: location.startYear,
-        endYear: location.endYear,
-        emoji: location.emoji,
-        locationType: location.locationType,
-        generalInfo: location.generalInfo,
-        biblicalReferences: location.biblicalReferences,
-        importantEvents: location.importantEvents,
-        coordinates: location.coordinates
-      })
     })
   }
 
-  // Sort by year
-  timelineEvents.sort((a, b) => a.displayYear - b.displayYear)
-
-  // Filter by year range
-  const filteredEvents = timelineEvents.filter(
-    event => event.displayYear >= startYear && event.displayYear <= endYear
-  )
-
-  // Format year for display
-  const formatYear = (year: number) => {
-    if (year < 0) {
-      return `${Math.abs(year)} BC`
-    }
-    return `${year} AD`
-  }
-
-  // Get event color based on type
-  const getEventColor = (eventType: 'birth' | 'death' | 'start' | 'end') => {
-    if (eventType === 'birth') return 'bg-green-500'
-    if (eventType === 'death') return 'bg-red-500'
-    if (eventType === 'start') return 'bg-blue-500'
-    return 'bg-purple-500' // end
-  }
-
-  // Get event icon
-  const getEventIcon = (eventType: 'birth' | 'death' | 'start' | 'end') => {
-    if (eventType === 'birth') return '👶'
-    if (eventType === 'death') return '💀'
-    if (eventType === 'start') return '🏗️'
-    return '🏛️' // end
-  }
-
-  // Get event border color
-  const getEventBorderColor = (eventType: 'birth' | 'death' | 'start' | 'end') => {
-    if (eventType === 'birth') return 'border-green-200'
-    if (eventType === 'death') return 'border-red-200'
-    if (eventType === 'start') return 'border-blue-200'
-    return 'border-purple-200' // end
-  }
+  // Filter events by year range
+  const filteredEvents = timelineEvents.filter(event => 
+    event.displayYear >= startYear && event.displayYear <= endYear
+  ).sort((a, b) => a.displayYear - b.displayYear)
 
   // Type guard to check if event is a person
   const isPerson = (event: TimelinePerson | TimelineLocation): event is TimelinePerson => {
-    return 'birthYear' in event && 'deathYear' in event
+    return 'gender' in event
+  }
+
+  // Helper functions
+  const formatYear = (year: number) => {
+    if (year < 0) return `${Math.abs(year)} BC`
+    return `${year} AD`
+  }
+
+  const getEventColor = (eventType: string) => {
+    switch (eventType) {
+      case 'birth': return 'bg-green-500'
+      case 'death': return 'bg-red-500'
+      case 'start': return 'bg-blue-500'
+      case 'end': return 'bg-purple-500'
+      default: return 'bg-gray-500'
+    }
+  }
+
+  const getEventBorderColor = (eventType: string) => {
+    switch (eventType) {
+      case 'birth': return 'border-green-200'
+      case 'death': return 'border-red-200'
+      case 'start': return 'border-blue-200'
+      case 'end': return 'border-purple-200'
+      default: return 'border-gray-200'
+    }
+  }
+
+  const getEventIcon = (eventType: string) => {
+    switch (eventType) {
+      case 'birth': return '👶'
+      case 'death': return '💀'
+      case 'start': return '🏛️'
+      case 'end': return '🏛️'
+      default: return '📅'
+    }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Biblical Timeline - Events</h1>
-          <p className="text-lg text-gray-600 mb-6">
-            Explore individual birth and death events in chronological order
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Timeline Events</h1>
+          <p className="text-xl text-gray-600 mb-6">
+            Explore biblical events chronologically. See births, deaths, and location events across time.
           </p>
           
           {/* Navigation */}
-          <div className="flex justify-center space-x-6 mb-6">
+          <div className="flex justify-center space-x-6">
             <Link 
-              href="/"
+              href="/timeline"
               className="text-blue-600 hover:text-blue-800 font-semibold"
             >
-              Home
-            </Link>
-            <Link 
-              href="/genealogy"
-              className="text-blue-600 hover:text-blue-800 font-semibold"
-            >
-              Genealogy
-            </Link>
-            <Link 
-              href="/bible"
-              className="text-blue-600 hover:text-blue-800 font-semibold"
-            >
-              Bible
+              ← Back to Timeline
             </Link>
             <Link 
               href="/timeline/lifespans"
@@ -330,7 +329,11 @@ export default function TimelineEventsPage() {
 
                 {/* Event Icon and Type */}
                 <div className="flex items-center mb-3">
-                  <span className="text-2xl mr-2">{getEventIcon(event.eventType)}</span>
+                  {isPerson(event) ? (
+                    <PersonIcon gender={event.gender} />
+                  ) : (
+                    <span className="text-2xl mr-2">{getEventIcon(event.eventType)}</span>
+                  )}
                   <span className={`text-sm font-semibold uppercase tracking-wide ${
                     event.eventType === 'birth' ? 'text-green-600' : 'text-red-600'
                   }`}>
@@ -351,6 +354,13 @@ export default function TimelineEventsPage() {
                       {event.name}
                     </h3>
                   </Link>
+                )}
+
+                {/* Gender indicator for persons */}
+                {isPerson(event) && (
+                  <div className="mb-3">
+                    <GenderIndicator gender={event.gender} />
+                  </div>
                 )}
 
                 {/* Event Info */}
@@ -443,55 +453,48 @@ export default function TimelineEventsPage() {
                         <span className="text-gray-600">Lifespan:</span>
                         <span className="font-medium">{selectedEvent.deathYear - selectedEvent.birthYear} years</span>
                       </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Gender:</span>
+                        <GenderIndicator gender={selectedEvent.gender} />
+                      </div>
                     </div>
                   </div>
                   
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Family</h3>
                     <div className="space-y-2">
-                      {selectedEvent.fatherId && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Father:</span>
-                          <Link 
-                            href={`/genealogy/${selectedEvent.fatherId}`}
-                            className="text-blue-600 hover:text-blue-800 font-medium"
-                          >
-                            {genealogyData.find(p => p.id === selectedEvent.fatherId)?.name}
-                          </Link>
-                        </div>
-                      )}
-                      {selectedEvent.motherId && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Mother:</span>
-                          <Link 
-                            href={`/genealogy/${selectedEvent.motherId}`}
-                            className="text-blue-600 hover:text-blue-800 font-medium"
-                          >
-                            {genealogyData.find(p => p.id === selectedEvent.motherId)?.name}
-                          </Link>
-                        </div>
-                      )}
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Father:</span>
+                        <span className="font-medium">
+                                                     {selectedEvent.fatherId ? (
+                             <Link href={`/genealogy/${selectedEvent.fatherId}`} className="text-blue-600 hover:text-blue-800">
+                               {genealogyData.find(p => p.id === selectedEvent.fatherId)?.name ?? 'Unknown'}
+                             </Link>
+                           ) : 'Unknown'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Mother:</span>
+                        <span className="font-medium">
+                                                     {selectedEvent.motherId ? (
+                             <Link href={`/genealogy/${selectedEvent.motherId}`} className="text-blue-600 hover:text-blue-800">
+                               {genealogyData.find(p => p.id === selectedEvent.motherId)?.name ?? 'Unknown'}
+                             </Link>
+                           ) : 'Unknown'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Information</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">About</h3>
                   <p className="text-gray-700 leading-relaxed">{selectedEvent.generalInfo}</p>
                 </div>
                 
-                <div className="mt-4">
+                <div className="mt-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Biblical References</h3>
                   <p className="text-gray-700">{selectedEvent.biblicalReferences}</p>
-                </div>
-                
-                <div className="mt-6">
-                  <Link
-                    href={`/genealogy/${selectedEvent.id}`}
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                  >
-                    View Full Profile →
-                  </Link>
                 </div>
               </>
             ) : (
@@ -512,41 +515,41 @@ export default function TimelineEventsPage() {
                         <span className="text-gray-600">Duration:</span>
                         <span className="font-medium">{selectedEvent.endYear - selectedEvent.startYear} years</span>
                       </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Location Details</h3>
-                    <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Type:</span>
                         <span className="font-medium capitalize">{selectedEvent.locationType}</span>
                       </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Location</h3>
+                    <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Coordinates:</span>
                         <span className="font-medium">{selectedEvent.coordinates}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Emoji:</span>
+                        <span className="font-medium text-2xl">{selectedEvent.emoji}</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Information</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">About</h3>
                   <p className="text-gray-700 leading-relaxed">{selectedEvent.generalInfo}</p>
                 </div>
                 
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Biblical References</h3>
-                  <p className="text-gray-700">{selectedEvent.biblicalReferences}</p>
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Important Events</h3>
+                  <p className="text-gray-700">{selectedEvent.importantEvents}</p>
                 </div>
                 
                 <div className="mt-6">
-                  <Link
-                    href={`/locations/${selectedEvent.id}`}
-                    className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                  >
-                    View Full Details →
-                  </Link>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Biblical References</h3>
+                  <p className="text-gray-700">{selectedEvent.biblicalReferences}</p>
                 </div>
               </>
             )}

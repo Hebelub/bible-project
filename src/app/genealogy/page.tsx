@@ -6,9 +6,29 @@ import { genealogyData, findChildren, findSpouses, findParents, findSiblings } f
 // Use the comprehensive genealogy data from the separate file
 const sampleData = genealogyData;
 
+// Gender display component
+const GenderIndicator = ({ gender }: { gender: 'male' | 'female' }) => {
+  const isMale = gender === 'male';
+  return (
+    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+      isMale 
+        ? 'bg-blue-100 text-blue-800 border border-blue-200' 
+        : 'bg-pink-100 text-pink-800 border border-pink-200'
+    }`}>
+      <span className="mr-1">{isMale ? '♂' : '♀'}</span>
+      {isMale ? 'Male' : 'Female'}
+    </div>
+  );
+};
 
-
-
+// Person icon component
+const PersonIcon = ({ gender }: { gender: 'male' | 'female' }) => {
+  return (
+    <div className={`text-4xl ${gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+      {gender === 'male' ? '👨' : '👩'}
+    </div>
+  );
+};
 
 export default function GenealogyPage() {
   return (
@@ -66,9 +86,10 @@ export default function GenealogyPage() {
                >
                   {/* Person Header */}
                   <div className="text-center mb-6">
-                    <div className="text-4xl mb-3">👤</div>
+                    <PersonIcon gender={person.gender} />
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{person.name}</h3>
-                    <div className="text-sm text-gray-500">
+                    <GenderIndicator gender={person.gender} />
+                    <div className="text-sm text-gray-500 mt-2">
                       {person.birthDate} - {person.deathDate}
                     </div>
                   </div>
@@ -79,12 +100,14 @@ export default function GenealogyPage() {
                       <h4 className="font-semibold text-gray-900 mb-2">Parents:</h4>
                       <div className="space-y-1">
                         {father && (
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-gray-600 flex items-center">
+                            <span className="mr-2 text-blue-500">👨</span>
                             <span className="font-medium">Father:</span> {father.name}
                           </div>
                         )}
                         {mother && (
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-gray-600 flex items-center">
+                            <span className="mr-2 text-pink-500">👩</span>
                             <span className="font-medium">Mother:</span> {mother.name}
                           </div>
                         )}
@@ -100,8 +123,11 @@ export default function GenealogyPage() {
                       </h4>
                       <div className="space-y-1">
                         {siblings.slice(0, 3).map((sibling) => (
-                          <div key={sibling.id} className="text-sm text-gray-600">
-                            👥 {sibling.name}
+                          <div key={sibling.id} className="text-sm text-gray-600 flex items-center">
+                            <span className={`mr-2 ${sibling.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+                              {sibling.gender === 'male' ? '👨' : '👩'}
+                            </span>
+                            {sibling.name}
                           </div>
                         ))}
                         {siblings.length > 3 && (
@@ -121,7 +147,10 @@ export default function GenealogyPage() {
                       </h4>
                       <div className="space-y-1">
                         {spouses.map((spouse) => (
-                          <div key={spouse.id} className="text-sm text-gray-600">
+                          <div key={spouse.id} className="text-sm text-gray-600 flex items-center">
+                            <span className={`mr-2 ${spouse.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+                              {spouse.gender === 'male' ? '👨' : '👩'}
+                            </span>
                             💕 {spouse.name}
                           </div>
                         ))}
@@ -137,8 +166,11 @@ export default function GenealogyPage() {
                       </h4>
                       <div className="space-y-1">
                         {children.slice(0, 4).map((child) => (
-                          <div key={child.id} className="text-sm text-gray-600">
-                            👶 {child.name}
+                          <div key={child.id} className="text-sm text-gray-600 flex items-center">
+                            <span className={`mr-2 ${child.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+                              {child.gender === 'male' ? '👶' : '👧'}
+                            </span>
+                            {child.name}
                           </div>
                         ))}
                         {children.length > 4 && (

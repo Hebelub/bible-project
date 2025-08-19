@@ -9,7 +9,7 @@ import { genealogyData, findChildren, findSpouses, findParents, findSiblings } f
 const sampleData = genealogyData;
 
 // PersonLink component for clickable relationships
-const PersonLink = ({ person, className = "" }: { person: { id: number; name: string }; className?: string }) => (
+const PersonLink = ({ person, className = "" }: { person: { id: number; name: string; gender: 'male' | 'female' }; className?: string }) => (
   <Link 
     href={`/genealogy/${person.id}`}
     className={`text-blue-600 hover:text-blue-800 hover:underline transition-colors ${className}`}
@@ -17,6 +17,30 @@ const PersonLink = ({ person, className = "" }: { person: { id: number; name: st
     {person.name}
   </Link>
 );
+
+// Gender display component
+const GenderIndicator = ({ gender }: { gender: 'male' | 'female' }) => {
+  const isMale = gender === 'male';
+  return (
+    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+      isMale 
+        ? 'bg-blue-100 text-blue-800 border border-blue-200' 
+        : 'bg-pink-100 text-pink-800 border border-pink-200'
+    }`}>
+      <span className="mr-2 text-lg">{isMale ? '♂' : '♀'}</span>
+      {isMale ? 'Male' : 'Female'}
+    </div>
+  );
+};
+
+// Person icon component
+const PersonIcon = ({ gender }: { gender: 'male' | 'female' }) => {
+  return (
+    <div className={`text-6xl ${gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+      {gender === 'male' ? '👨' : '👩'}
+    </div>
+  );
+};
 
 interface PageProps {
   params: Promise<{
@@ -71,9 +95,10 @@ export default function PersonPage({ params }: PageProps) {
           <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8">
             {/* Person Header */}
             <div className="text-center mb-8">
-              <div className="text-6xl mb-4">👤</div>
+              <PersonIcon gender={person.gender} />
               <h1 className="text-5xl font-bold text-gray-900 mb-4">{person.name}</h1>
-              <div className="text-xl text-gray-500">
+              <GenderIndicator gender={person.gender} />
+              <div className="text-xl text-gray-500 mt-3">
                 {person.birthDate} - {person.deathDate}
               </div>
             </div>
@@ -89,7 +114,7 @@ export default function PersonPage({ params }: PageProps) {
                     <div className="space-y-3">
                       {father && (
                         <div className="flex items-center">
-                          <span className="text-lg mr-3">👨</span>
+                          <span className="text-lg mr-3 text-blue-500">👨</span>
                           <div>
                             <span className="font-medium text-gray-700">Father: </span>
                             <PersonLink person={father} className="text-lg" />
@@ -98,7 +123,7 @@ export default function PersonPage({ params }: PageProps) {
                       )}
                       {mother && (
                         <div className="flex items-center">
-                          <span className="text-lg mr-3">👩</span>
+                          <span className="text-lg mr-3 text-pink-500">👩</span>
                           <div>
                             <span className="font-medium text-gray-700">Mother: </span>
                             <PersonLink person={mother} className="text-lg" />
@@ -118,7 +143,9 @@ export default function PersonPage({ params }: PageProps) {
                     <div className="space-y-2">
                       {siblings.map((sibling) => (
                         <div key={sibling.id} className="flex items-center">
-                          <span className="text-lg mr-3">👥</span>
+                          <span className={`text-lg mr-3 ${sibling.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+                            {sibling.gender === 'male' ? '👨' : '👩'}
+                          </span>
                           <PersonLink person={sibling} className="text-lg" />
                         </div>
                       ))}
@@ -138,7 +165,10 @@ export default function PersonPage({ params }: PageProps) {
                     <div className="space-y-2">
                       {spouses.map((spouse) => (
                         <div key={spouse.id} className="flex items-center">
-                          <span className="text-lg mr-3">💕</span>
+                          <span className={`text-lg mr-3 ${spouse.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+                            {spouse.gender === 'male' ? '👨' : '👩'}
+                          </span>
+                          <span className="text-lg mr-2">💕</span>
                           <PersonLink person={spouse} className="text-lg" />
                         </div>
                       ))}
@@ -155,7 +185,9 @@ export default function PersonPage({ params }: PageProps) {
                     <div className="space-y-2">
                       {children.map((child) => (
                         <div key={child.id} className="flex items-center">
-                          <span className="text-lg mr-3">👶</span>
+                          <span className={`text-lg mr-3 ${child.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+                            {child.gender === 'male' ? '👶' : '👧'}
+                          </span>
                           <PersonLink person={child} className="text-lg" />
                         </div>
                       ))}

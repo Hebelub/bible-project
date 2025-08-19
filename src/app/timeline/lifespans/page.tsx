@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { genealogyData, type Person } from '~/data/genealogy'
 
@@ -12,6 +12,32 @@ interface LifespanLine {
   startPercent: number
   endPercent: number
 }
+
+// Gender display component
+const GenderIndicator = ({ gender }: { gender: 'male' | 'female' }) => {
+  const isMale = gender === 'male';
+  return (
+    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+      isMale 
+        ? 'bg-blue-100 text-blue-800 border border-blue-200' 
+        : 'bg-pink-100 text-pink-800 border border-pink-200'
+    }`}>
+      <span className="mr-1">{isMale ? '♂' : '♀'}</span>
+      {isMale ? 'Male' : 'Female'}
+    </div>
+  );
+};
+
+// Get gender-based colors for lifespan lines
+const getGenderColors = (gender: 'male' | 'female') => {
+  if (gender === 'male') {
+    return 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+  } else {
+    return 'from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700'
+  }
+};
+
+
 
 export default function TimelineLifespansPage() {
   const [startYear, setStartYear] = useState(-4000)
@@ -98,47 +124,32 @@ export default function TimelineLifespansPage() {
 
   // Format year for display
   const formatYear = (year: number) => {
-    if (year < 0) {
-      return `${Math.abs(year)} BC`
-    }
+    if (year < 0) return `${Math.abs(year)} BC`
     return `${year} AD`
   }
 
-  // Calculate position for lifespan line
+  // Get position percentage for a given year
   const getLifespanPosition = (year: number) => {
-    const totalYears = endYear - startYear
-    return ((year - startYear) / totalYears) * 100
+    return ((year - startYear) / (endYear - startYear)) * 100
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Biblical Timeline - Lifespans</h1>
-          <p className="text-lg text-gray-600 mb-6">
-            View complete lifespans as horizontal lines showing birth to death
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Timeline Lifespans</h1>
+          <p className="text-xl text-gray-600 mb-6">
+            View complete lifespans as horizontal lines. See how biblical figures lived and overlapped in time.
           </p>
           
           {/* Navigation */}
-          <div className="flex justify-center space-x-6 mb-6">
+          <div className="flex justify-center space-x-6">
             <Link 
-              href="/"
+              href="/timeline"
               className="text-blue-600 hover:text-blue-800 font-semibold"
             >
-              Home
-            </Link>
-            <Link 
-              href="/genealogy"
-              className="text-blue-600 hover:text-blue-800 font-semibold"
-            >
-              Genealogy
-            </Link>
-            <Link 
-              href="/bible"
-              className="text-blue-600 hover:text-blue-800 font-semibold"
-            >
-              Bible
+              ← Back to Timeline
             </Link>
             <Link 
               href="/timeline/events"
@@ -213,6 +224,17 @@ export default function TimelineLifespansPage() {
               <span>View complete lifespans as horizontal lines</span>
               <span>Click on lines for details</span>
             </div>
+            {/* Gender Legend */}
+            <div className="flex items-center space-x-4 text-xs text-gray-600">
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded mr-2"></div>
+                <span>Male</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-gradient-to-r from-pink-500 to-pink-600 rounded mr-2"></div>
+                <span>Female</span>
+              </div>
+            </div>
           </div>
 
           {/* Lifespans View */}
@@ -250,7 +272,7 @@ export default function TimelineLifespansPage() {
                   >
                     {/* Lifespan line */}
                     <Link href={`/genealogy/${line.person.id}`} className="block w-full h-full">
-                      <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-medium text-sm group-hover:shadow-lg transition-all duration-200 hover:from-blue-600 hover:to-purple-700">
+                      <div className={`w-full h-full bg-gradient-to-r ${getGenderColors(line.person.gender)} rounded-lg flex items-center justify-center text-white font-medium text-sm group-hover:shadow-lg transition-all duration-200`}>
                         {line.person.name}
                       </div>
                     </Link>
@@ -306,55 +328,48 @@ export default function TimelineLifespansPage() {
                     <span className="text-gray-600">Lifespan:</span>
                     <span className="font-medium">{selectedPerson.deathYear - selectedPerson.birthYear} years</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Gender:</span>
+                    <GenderIndicator gender={selectedPerson.gender} />
+                  </div>
                 </div>
               </div>
               
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">Family</h3>
                 <div className="space-y-2">
-                  {selectedPerson.fatherId && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Father:</span>
-                      <Link 
-                        href={`/genealogy/${selectedPerson.fatherId}`}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        {genealogyData.find(p => p.id === selectedPerson.fatherId)?.name}
-                      </Link>
-                    </div>
-                  )}
-                  {selectedPerson.motherId && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Mother:</span>
-                      <Link 
-                        href={`/genealogy/${selectedPerson.motherId}`}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        {genealogyData.find(p => p.id === selectedPerson.motherId)?.name}
-                      </Link>
-                    </div>
-                  )}
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Father:</span>
+                    <span className="font-medium">
+                      {selectedPerson.fatherId ? (
+                        <Link href={`/genealogy/${selectedPerson.fatherId}`} className="text-blue-600 hover:text-blue-800">
+                          {genealogyData.find(p => p.id === selectedPerson.fatherId)?.name ?? 'Unknown'}
+                        </Link>
+                      ) : 'Unknown'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Mother:</span>
+                    <span className="font-medium">
+                      {selectedPerson.motherId ? (
+                        <Link href={`/genealogy/${selectedPerson.motherId}`} className="text-blue-600 hover:text-blue-800">
+                          {genealogyData.find(p => p.id === selectedPerson.motherId)?.name ?? 'Unknown'}
+                        </Link>
+                      ) : 'Unknown'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
             
             <div className="mt-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Information</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">About</h3>
               <p className="text-gray-700 leading-relaxed">{selectedPerson.generalInfo}</p>
             </div>
             
-            <div className="mt-4">
+            <div className="mt-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Biblical References</h3>
               <p className="text-gray-700">{selectedPerson.biblicalReferences}</p>
-            </div>
-            
-            <div className="mt-6">
-              <Link
-                href={`/genealogy/${selectedPerson.id}`}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                View Full Profile →
-              </Link>
             </div>
           </div>
         )}
