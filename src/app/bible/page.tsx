@@ -17,18 +17,18 @@ const RUTH_PEOPLE: Record<string, number> = {
   'Mahlon': 75,
   'Kilion': 76,
   'Orpah': 77,
-  'Ruth': 78,
-  'Boaz': 79,
-  'Obed': 80,
-  'Jesse': 81,
-  'David': 82,
-  'Perez': 35,
-  'Hezron': 36,
-  'Ram': 37,
-  'Amminadab': 38,
-  'Nahshon': 39,
-  'Salmon': 40,
-  'Rahab': 41
+  'Ruth': 40, // Use main genealogy ID
+  'Boaz': 39, // Use main genealogy ID
+  'Obed': 41, // Use main genealogy ID
+  'Jesse': 42, // Use main genealogy ID
+  'David': 43, // Use main genealogy ID
+  'Perez': 31, // Use main genealogy ID
+  'Hezron': 33, // Use main genealogy ID
+  'Ram': 34, // Use main genealogy ID
+  'Amminadab': 35, // Use main genealogy ID
+  'Nahshon': 36, // Use main genealogy ID
+  'Salmon': 37, // Use main genealogy ID
+  'Rahab': 38 // Use main genealogy ID
 }
 
 // Function to make person names clickable

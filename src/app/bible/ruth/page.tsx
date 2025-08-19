@@ -19,24 +19,24 @@ const RUTH_PEOPLE: Record<string, number> = {
   'Kiljon': 76, // Norwegian spelling
   'Orpah': 77,
   'Orpa': 77, // Norwegian spelling
-  'Ruth': 78,
-  'Rut': 78, // Norwegian spelling
-  'Boaz': 39,
+  'Ruth': 40, // Use main genealogy ID
+  'Rut': 40, // Norwegian spelling
+  'Boaz': 39, // Use main genealogy ID
   'Boas': 39, // Norwegian spelling
-  'Obed': 41,
-  'Jesse': 42,
+  'Obed': 41, // Use main genealogy ID
+  'Jesse': 42, // Use main genealogy ID
   'Isai': 42, // Norwegian spelling
-  'David': 43,
-  'Perez': 35,
-  'Peres': 35, // Norwegian spelling
-  'Hezron': 36,
-  'Hesron': 36, // Norwegian spelling
-  'Ram': 37,
-  'Amminadab': 38,
-  'Nahshon': 39,
-  'Nahsjon': 39, // Norwegian spelling
-  'Salmon': 40,
-  'Rahab': 41
+  'David': 43, // Use main genealogy ID
+  'Perez': 31, // Use main genealogy ID
+  'Peres': 31, // Norwegian spelling
+  'Hezron': 33, // Use main genealogy ID
+  'Hesron': 33, // Norwegian spelling
+  'Ram': 34, // Use main genealogy ID
+  'Amminadab': 35, // Use main genealogy ID
+  'Nahshon': 36, // Use main genealogy ID
+  'Nahsjon': 36, // Norwegian spelling
+  'Salmon': 37, // Use main genealogy ID
+  'Rahab': 38 // Use main genealogy ID
 }
 
 // Mapping of location names to their location IDs (from Book of Ruth)
