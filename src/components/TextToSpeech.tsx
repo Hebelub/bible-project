@@ -9,9 +9,11 @@ interface TextToSpeechProps {
   className?: string
   onChapterChange?: (chapter: number) => void
   currentChapter: number
+  isPaused?: boolean
+  onPauseChange?: (paused: boolean) => void
 }
 
-export function TextToSpeech({ chapters, startChapter, language, className = '', onChapterChange, currentChapter }: TextToSpeechProps) {
+export function TextToSpeech({ chapters, startChapter, language, className = '', onChapterChange, currentChapter, isPaused = false, onPauseChange }: TextToSpeechProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [chapterIndex, setChapterIndex] = useState(Math.max(0, Math.min(chapters.length - 1, startChapter - 1)))
@@ -103,6 +105,27 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
       audio.removeEventListener('ended', handleEnded)
     }
   }, [onChapterChange, currentChapter])
+
+  // Reset audio when language changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+      setIsPlaying(false)
+      setChapterIndex(Math.max(0, Math.min(chapters.length - 1, startChapter - 1)))
+    }
+  }, [language, chapters.length, startChapter])
+
+  // Pause audio when isPaused is true
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPaused) {
+        audioRef.current.pause()
+      } else if (isPlaying) {
+        void audioRef.current.play()
+      }
+    }
+  }, [isPaused, isPlaying])
 
   const handlePlayPause = () => {
     if (!audioRef.current?.src) {

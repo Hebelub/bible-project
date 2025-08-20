@@ -5,6 +5,7 @@ import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { LanguageProvider } from "~/contexts/LanguageContext";
+import { HydrationSafe } from "~/components/HydrationSafe";
 
 export const metadata: Metadata = {
   title: "Bible Project - Interactive Bible Study Platform",
@@ -35,11 +36,13 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning={true}>
       <body suppressHydrationWarning={true}>
-        <LanguageProvider>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
-        </LanguageProvider>
+        <HydrationSafe>
+          <LanguageProvider>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+          </LanguageProvider>
+        </HydrationSafe>
       </body>
     </html>
   );

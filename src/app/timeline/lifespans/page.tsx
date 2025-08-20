@@ -51,14 +51,27 @@ export default function TimelineLifespansPage() {
     'ruth': { start: -1200, end: -1000 } // Approximate time period for Ruth
   }
 
-  // Restore settings from localStorage
+  // Restore settings from localStorage and handle URL params
   useEffect(() => {
-    const savedBook = localStorage.getItem('timelineSelectedBook')
-    if (savedBook && bookTimeRanges[savedBook]) {
-      setSelectedBook(savedBook)
-      const range = bookTimeRanges[savedBook]
+    // Check for URL query parameter first
+    const urlParams = new URLSearchParams(window.location.search)
+    const bookParam = urlParams.get('book')
+    
+    if (bookParam && bookTimeRanges[bookParam]) {
+      setSelectedBook(bookParam)
+      const range = bookTimeRanges[bookParam]
       setStartYear(range.start)
       setEndYear(range.end)
+      localStorage.setItem('timelineSelectedBook', bookParam)
+    } else {
+      // Fall back to localStorage
+      const savedBook = localStorage.getItem('timelineSelectedBook')
+      if (savedBook && bookTimeRanges[savedBook]) {
+        setSelectedBook(savedBook)
+        const range = bookTimeRanges[savedBook]
+        setStartYear(range.start)
+        setEndYear(range.end)
+      }
     }
   }, [])
 

@@ -136,7 +136,19 @@ export default function MapPage() {
           <div className="relative">
             {/* Map Image */}
             <div className="relative w-full h-[600px] bg-gray-100 rounded-lg overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
+              <img
+                src="/biblical-map.jpg"
+                alt="Biblical Map - Area of primary Israelite settlement"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  // Fallback if image doesn't exist
+                  const target = e.target as HTMLImageElement
+                  target.style.display = 'none'
+                  target.nextElementSibling?.classList.remove('hidden')
+                }}
+              />
+              {/* Fallback content if image doesn't exist */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center hidden">
                 <div className="text-center">
                   <div className="text-6xl mb-4">🗺️</div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Biblical Map</h3>
