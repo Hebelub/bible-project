@@ -12,56 +12,21 @@ import { genealogyData, type Person } from '~/data/genealogy'
 const ConceptTooltip = ({ 
   concept, 
   isOpen, 
-  onClose,
-  clickPosition
+  onClose
 }: { 
   concept: { emoji: string; explanation: string; type: 'concept' | 'key'; bibleReferences?: string[] } | null
   isOpen: boolean
   onClose: () => void 
-  clickPosition?: { x: number; y: number }
 }) => {
   if (!isOpen || !concept) return null
 
-  // Better positioning logic
+  // Always center the tooltip on screen
   const getTooltipStyle = () => {
-    if (!clickPosition) {
-      return {
-        position: 'fixed' as const,
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)'
-      }
-    }
-
-    const { x, y } = clickPosition
-    const tooltipWidth = 500
-    const tooltipHeight = 400
-    const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1200
-    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800
-    const padding = 20
-
-    let left = x - tooltipWidth / 2
-    let top = y - tooltipHeight / 2
-
-    // Adjust horizontal position
-    if (left < padding) {
-      left = padding
-    } else if (left + tooltipWidth > viewportWidth - padding) {
-      left = viewportWidth - tooltipWidth - padding
-    }
-
-    // Adjust vertical position
-    if (top < padding) {
-      top = padding
-    } else if (top + tooltipHeight > viewportHeight - padding) {
-      top = viewportHeight - tooltipHeight - padding
-    }
-
     return {
       position: 'fixed' as const,
-      top: `${top}px`,
-      left: `${left}px`,
-      transform: 'none'
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)'
     }
   }
 
@@ -95,7 +60,7 @@ const ConceptTooltip = ({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={onClose}>
       <div 
-        className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl p-8 max-w-lg mx-4 shadow-2xl border border-slate-200 dark:border-slate-700 relative animate-in zoom-in-95 duration-200"
+        className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl p-4 sm:p-6 lg:p-8 w-[95vw] max-w-sm sm:max-w-md lg:max-w-lg mx-2 sm:mx-4 shadow-2xl border border-slate-200 dark:border-slate-700 relative animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
         style={getTooltipStyle()}
       >
@@ -105,7 +70,7 @@ const ConceptTooltip = ({
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all duration-200 group"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all duration-200 group z-20"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -113,13 +78,13 @@ const ConceptTooltip = ({
         </button>
         
         {/* Header with emoji and type */}
-        <div className="relative z-10 mb-6">
-          <div className="flex items-center space-x-4 mb-3">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl shadow-lg">
+        <div className="relative z-10 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-2xl sm:text-3xl shadow-lg mx-auto sm:mx-0">
               {concept.emoji}
             </div>
-            <div>
-              <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide mb-1">
+            <div className="text-center sm:text-left">
+              <div className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide mb-1">
                 {concept.type === 'key' ? (
                   <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2 py-1 rounded-full">
                     🔑 Key to Understanding
@@ -130,7 +95,7 @@ const ConceptTooltip = ({
                   </span>
                 )}
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">
                 {concept.type === 'key' ? 'Key to Understanding' : 'Biblical Concept'}
               </h3>
             </div>
@@ -139,8 +104,8 @@ const ConceptTooltip = ({
         
         {/* Content */}
         <div className="relative z-10">
-          <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl p-6 border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm">
-            <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-base mb-4">
+          <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl p-4 sm:p-6 border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm">
+            <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base mb-4">
               {concept.explanation}
             </p>
             
@@ -150,12 +115,12 @@ const ConceptTooltip = ({
                 <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
                   📖 Bible References:
                 </h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1 sm:gap-2">
                   {concept.bibleReferences.map((reference, index) => (
                     <Link
                       key={index}
                       href={createBibleUrl(reference)}
-                      className="inline-flex items-center px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-colors duration-200"
+                      className="inline-flex items-center px-2 sm:px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-colors duration-200"
                       onClick={onClose}
                     >
                       {reference}
@@ -236,14 +201,14 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
   'gleaning': {
     emoji: '🌾',
     type: 'key',
-    explanation: 'Gleaning was a biblical practice where poor people could collect leftover grain from fields after harvest. This was a form of social welfare commanded by God in Leviticus 19:9-10 and Deuteronomy 24:19-22. It shows God\'s care for the vulnerable and the importance of community responsibility.',
-    bibleReferences: ['Leviticus 19:9-10', 'Deuteronomy 24:19-22', 'Ruth 2:2-3']
+    explanation: 'Gleaning was a biblical practice where poor people could collect leftover grain from fields after harvest. The Hebrew law required landowners to leave corners and dropped grain for the poor and foreigners (Leviticus 19:9-10, Deuteronomy 24:19-22). This demonstrates God\'s care for the vulnerable and the importance of community responsibility. Ruth\'s ability to glean shows how God provides through His laws.',
+    bibleReferences: ['Leviticus 19:9-10', 'Deuteronomy 24:19-22', 'Ruth 2:2-3', 'Isaiah 17:5-6']
   },
   'kinsman-redeemer': {
     emoji: '💍',
     type: 'key',
-    explanation: 'A kinsman-redeemer (go\'el in Hebrew) was a close relative who had the right and responsibility to help family members in need. This included buying back family land, marrying widows to continue the family line, and avenging wrongs. This concept points to Jesus as our ultimate redeemer.',
-    bibleReferences: ['Ruth 3:9', 'Ruth 4:1-10', 'Leviticus 25:25', 'Isaiah 59:20']
+    explanation: 'A kinsman-redeemer (go\'el - גואל in Hebrew) was a close relative who had the right and responsibility to help family members in need. This included buying back family land, marrying widows to continue the family line, and avenging wrongs. The Hebrew word "gaal" means to redeem, buy back, or act as a kinsman. This concept points to Jesus as our ultimate redeemer who redeems us from sin and death.',
+    bibleReferences: ['Ruth 3:9', 'Ruth 4:1-10', 'Leviticus 25:25-55', 'Deuteronomy 25:5-10', 'Isaiah 59:20', 'Galatians 4:4-5']
   },
   'levirate marriage': {
     emoji: '👰',
@@ -259,7 +224,14 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
   'loyalty': {
     emoji: '🤝',
     type: 'key',
-    explanation: 'Loyalty (hesed in Hebrew) is a key theme in Ruth. It refers to steadfast love, faithfulness, and commitment. Ruth shows loyalty to Naomi, and God shows loyalty to His people. This Hebrew word appears frequently in the Old Testament.'
+    explanation: 'Loyalty (hesed - חסד in Hebrew) is a key theme in Ruth. The Hebrew word "chesed" means loyal love, mercy, and kindness. It\'s not just emotion but action - the kind of love that keeps promises even when it\'s costly. Ruth shows this hesed to Naomi, and God shows hesed to His people. This word appears multiple times in Ruth and throughout the Old Testament.',
+    bibleReferences: ['Ruth 1:8', 'Ruth 2:20', 'Psalm 136', 'Hosea 6:6', 'Micah 6:8', 'Lamentations 3:22']
+  },
+  'chesed': {
+    emoji: '💝',
+    type: 'concept',
+    explanation: 'Chesed (חסד) is the Hebrew word for "kindness" that appears multiple times in Ruth. It means loyal love, mercy, and covenant faithfulness. This word is central to understanding the book\'s theme of God\'s faithful love and human loyalty. Chesed is not just feeling but action - it\'s the kind of love that keeps promises even when it\'s costly.',
+    bibleReferences: ['Ruth 1:8', 'Ruth 2:20', 'Ruth 3:10', 'Psalm 136', 'Hosea 6:6', 'Micah 6:8', 'Lamentations 3:22']
   },
   'providence': {
     emoji: '👁️',
@@ -269,12 +241,32 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
   'covenant': {
     emoji: '📜',
     type: 'key',
-    explanation: 'The covenant relationship between God and His people is demonstrated through Ruth\'s story. Her commitment to Naomi and adoption into Israel shows how God\'s covenant extends to all who trust in Him.'
+    explanation: 'The covenant relationship between God and His people is demonstrated through Ruth\'s story. Her commitment to Naomi and adoption into Israel shows how God\'s covenant extends to all who trust in Him.',
+    bibleReferences: ['Genesis 12:1-3', 'Deuteronomy 7:9', 'Psalm 105:8-11', 'Romans 11:29', 'Hebrews 6:17-18']
+  },
+  'jewish-laws': {
+    emoji: '⚖️',
+    type: 'concept',
+    explanation: 'Several Jewish laws are implicit in Ruth\'s story: gleaning laws (Leviticus 19:9-10), levirate marriage (Deuteronomy 25:5-10), kinsman-redeemer laws (Leviticus 25:25-55), and inheritance laws (Numbers 36:1-13). These laws show God\'s care for the vulnerable and His concern for family continuity and land stewardship.',
+    bibleReferences: ['Leviticus 19:9-10', 'Deuteronomy 25:5-10', 'Leviticus 25:25-55', 'Numbers 36:1-13', 'Ruth 2:2', 'Ruth 3:9', 'Ruth 4:3-6']
   },
   'grace': {
     emoji: '✨',
     type: 'key',
     explanation: 'Grace is unmerited favor. Ruth, a foreigner, receives grace from Boaz and ultimately from God. This demonstrates God\'s grace to all people, regardless of their background or status.'
+  },
+  'elimelech': {
+    emoji: '👨‍👩‍👧‍👦',
+    type: 'key',
+    explanation: 'Elimelech means "My God is King" in Hebrew. His decision to leave Bethlehem during famine shows a lack of faith in God\'s provision. Bethlehem was the "House of Bread" where God had provided for His people, but Elimelech chose to trust in Moab\'s resources instead of God\'s faithfulness. This reflects the spiritual condition of Israel during the period of the Judges.',
+    bibleReferences: ['Ruth 1:1-2', 'Deuteronomy 28:15-68', 'Judges 2:11-19', 'Psalm 37:25']
+  },
+
+  'moab': {
+    emoji: '🏔️',
+    type: 'key',
+    explanation: 'Moab was a pagan nation descended from Lot\'s incestuous relationship with his daughter (Genesis 19:30-38). Going there meant living among idolaters and abandoning the Promised Land. The Moabites were forbidden from entering the assembly of the Lord (Deuteronomy 23:3-6), making this move spiritually dangerous.',
+    bibleReferences: ['Ruth 1:1', 'Genesis 19:30-38', 'Numbers 25:1-3', 'Deuteronomy 23:3-6', 'Psalm 60:8']
   },
   
   // Key to understanding - Norwegian
@@ -338,7 +330,8 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
   'foreigner': {
     emoji: '🌍',
     type: 'concept',
-    explanation: 'Ruth was a Moabite, a foreigner in Israel. Moabites were often viewed with suspicion, but Ruth\'s loyalty and faith show that God accepts people from all nations. This challenges ethnic and cultural barriers.'
+    explanation: 'Ruth was a Moabite, a foreigner in Israel. Moabites were often viewed with suspicion, but Ruth\'s loyalty and faith show that God accepts people from all nations. This challenges ethnic and cultural barriers.',
+    bibleReferences: ['Ruth 1:4', 'Ruth 2:6', 'Deuteronomy 24:19-22', 'Isaiah 56:6-7', 'Matthew 28:19-20', 'Acts 10:34-35']
   },
   'glean': {
     emoji: '🌾',
@@ -468,7 +461,8 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
   'bethlehem': {
     emoji: '🏘️',
     type: 'concept',
-    explanation: 'Bethlehem means "house of bread" and was the setting for Ruth\'s story. It later becomes significant as the birthplace of David and ultimately Jesus, showing God\'s plan throughout history.'
+    explanation: 'Bethlehem means "House of Bread" in Hebrew (בית לחם). Ironically, during famine, the "house of bread" had no bread, showing the severity of the crisis and God\'s judgment on Israel. Bethlehem was in Judah\'s territory, the royal tribe, and later became the birthplace of the Messiah, showing God\'s redemptive plan.',
+    bibleReferences: ['Ruth 1:1', 'Genesis 35:19', 'Micah 5:2', 'Matthew 2:1-6', 'Luke 2:4-7']
   },
   'obed': {
     emoji: '👶',
@@ -637,6 +631,23 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
     emoji: '👨',
     type: 'concept',
     explanation: 'Isai var Obeds sønn og Davids far. Hans omtale kobler Ruts historie til Davids kongelige linje.'
+  },
+  
+  // Additional Norwegian concepts to match English ones
+  'sult': {
+    emoji: '🌾',
+    type: 'concept',
+    explanation: 'Sult var vanlig i oldtiden og ble ofte sett på som Guds dom eller prøvelse. I Rut driver sulten No\'omis familie til Moab, som setter opp historien.'
+  },
+  'velsignet': {
+    emoji: '🙏',
+    type: 'concept',
+    explanation: 'Velsignelser var viktige i hebraisk kultur. De var bønner om Guds gunst og kunne gis av hvem som helst. Boas velsigner Rut, og kvinnene velsigner No\'omi når Obed blir født.'
+  },
+  'betlehem': {
+    emoji: '🏠',
+    type: 'concept',
+    explanation: 'Betlehem betyr "Brødets hus" på hebraisk. Det var der Gud hadde gitt forsyning til sitt folk, men Elimelek valgte å stole på Moabs ressurser i stedet for Guds trofasthet. Dette reflekterer Israels åndelige tilstand under dommernes periode.'
   }
 }
 
@@ -681,8 +692,10 @@ function makeTextClickable(text: string) {
 // Timeline Lifespans View Component for Popup
 const TimelineLifespansView = () => {
   const startYear = -1200
-  const endYear = -1000
+  const endYear = -900
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
+  const [zoom, setZoom] = useState(1)
+  const [scrollLeft, setScrollLeft] = useState(0)
   
   // Interface for lifespan lines
   interface LifespanLine {
@@ -705,9 +718,26 @@ const TimelineLifespansView = () => {
   
   // Create lifespan lines with proper positioning
   const createLifespanLines = (): LifespanLine[] => {
-    const people = genealogyData.filter(person => 
-      person.birthYear >= startYear && person.deathYear <= endYear
-    )
+    const people = genealogyData.filter(person => {
+      // Include people from Ruth's time period
+      const inTimePeriod = person.birthYear >= startYear && person.deathYear <= endYear
+      
+              // Include specific people mentioned in Ruth's story
+        const ruthCharacters = ['Ruth', 'Boaz', 'Naomi', 'Elimelech', 'Mahlon', 'Chilion', 'Kilion', 'Orpah', 'Obed', 'Jesse', 'David']
+      const isRuthCharacter = ruthCharacters.some(name => 
+        person.name.toLowerCase().includes(name.toLowerCase()) ||
+        name.toLowerCase().includes(person.name.toLowerCase())
+      )
+      
+              // Include people from the genealogy at the end of Ruth (Perez to David)
+        const ruthGenealogy = ['Perez', 'Hezron', 'Ram', 'Amminadab', 'Nahshon', 'Salmon', 'Boaz', 'Obed', 'Jesse', 'David', 'Kilion']
+      const isInRuthGenealogy = ruthGenealogy.some(name => 
+        person.name.toLowerCase().includes(name.toLowerCase()) ||
+        name.toLowerCase().includes(person.name.toLowerCase())
+      )
+      
+      return inTimePeriod || isRuthCharacter || isInRuthGenealogy
+    })
     
     const lines: LifespanLine[] = []
     const totalYears = endYear - startYear
@@ -761,9 +791,35 @@ const TimelineLifespansView = () => {
   
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
-      <div className="text-center mb-4">
-        <h5 className="font-semibold text-gray-900 mb-1">Book of Ruth Timeline</h5>
-        <p className="text-xs text-gray-600">Lifespans: {formatYear(startYear)} - {formatYear(endYear)}</p>
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <Link
+            href="/timeline/lifespans?book=ruth"
+            className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+          >
+            📊 Full Timeline →
+          </Link>
+          <h5 className="font-semibold text-gray-900">Book of Ruth Timeline</h5>
+          <div className="w-16"></div> {/* Spacer for centering */}
+        </div>
+        <p className="text-xs text-gray-600 text-center">Lifespans: {formatYear(startYear)} - {formatYear(endYear)}</p>
+        
+        {/* Zoom Controls */}
+        <div className="flex items-center justify-center space-x-2 mt-2">
+          <button
+            onClick={() => setZoom(Math.max(0.5, zoom - 0.2))}
+            className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
+          >
+            🔍-
+          </button>
+          <span className="text-xs text-gray-600">{Math.round(zoom * 100)}%</span>
+          <button
+            onClick={() => setZoom(Math.min(3, zoom + 0.2))}
+            className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
+          >
+            🔍+
+          </button>
+        </div>
       </div>
       
       {/* Timeline Header */}
@@ -782,13 +838,13 @@ const TimelineLifespansView = () => {
       </div>
       
       {/* Timeline Container */}
-      <div className="relative overflow-x-auto">
+      <div className="relative overflow-x-auto" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}>
         {/* Year markers */}
-        <div className="flex mb-2 border-b border-gray-300 pb-1">
+        <div className="flex mb-2 border-b border-gray-300 pb-1" style={{ minWidth: `${(endYear - startYear) * 2}px` }}>
           {Array.from({ length: Math.ceil((endYear - startYear) / 50) + 1 }, (_, i) => {
             const year = startYear + i * 50
             return (
-              <div key={year} className="flex-shrink-0 text-xs text-gray-500 font-medium" style={{ width: '50px' }}>
+              <div key={year} className="flex-shrink-0 text-xs text-gray-500 font-medium" style={{ width: '100px' }}>
                 {formatYear(year)}
               </div>
             )
@@ -796,7 +852,7 @@ const TimelineLifespansView = () => {
         </div>
 
         {/* Lifespan lines */}
-        <div className="relative" style={{ height: `${Math.max(lifespanLines.length * 45, 180)}px` }}>
+        <div className="relative" style={{ height: `${Math.max(lifespanLines.length * 45, 180)}px`, minWidth: `${(endYear - startYear) * 2}px` }}>
           {lifespanLines.map((line) => {
             const startPercent = getLifespanPosition(line.startYear)
             const endPercent = getLifespanPosition(line.endYear)
@@ -927,7 +983,7 @@ function getVerseEmojis(text: string, onConceptClick: (concept: { emoji: string;
     <button
       key={index}
       onClick={(event) => onConceptClick(concept, event)}
-      className="ml-2 text-lg hover:scale-125 transition-all duration-200 cursor-pointer p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 shadow-sm hover:shadow-md"
+      className="ml-1 sm:ml-2 text-lg hover:scale-125 transition-all duration-200 cursor-pointer p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 shadow-sm hover:shadow-md"
       title={`${concept.type === 'key' ? 'Key to Understanding' : 'Concept'}`}
     >
       {concept.emoji}
@@ -939,14 +995,12 @@ export default function RuthPage() {
   const { language } = useLanguage()
   const [conceptTooltip, setConceptTooltip] = useState<{ emoji: string; explanation: string; type: 'concept' | 'key'; bibleReferences?: string[] } | null>(null)
   const [isTooltipOpen, setIsTooltipOpen] = useState(false)
-  const [showChapterVerse, setShowChapterVerse] = useState(false)
-  const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | undefined>(undefined)
+  const [showChapterVerse, setShowChapterVerse] = useState(true)
   const [showBottomPopup, setShowBottomPopup] = useState(false)
   const [bottomPopupType, setBottomPopupType] = useState<'map' | 'timeline' | null>(null)
   const ruthText = getRuthText(language)
 
-  const handleConceptClick = (concept: { emoji: string; explanation: string; type: 'concept' | 'key'; bibleReferences?: string[] }, event: React.MouseEvent) => {
-    setClickPosition({ x: event.clientX, y: event.clientY })
+  const handleConceptClick = (concept: { emoji: string; explanation: string; type: 'concept' | 'key'; bibleReferences?: string[] }) => {
     setConceptTooltip(concept)
     setIsTooltipOpen(true)
   }
@@ -954,7 +1008,11 @@ export default function RuthPage() {
   const closeTooltip = () => {
     setIsTooltipOpen(false)
     setConceptTooltip(null)
-    setClickPosition(undefined)
+  }
+
+  const closeBottomPopup = () => {
+    setShowBottomPopup(false)
+    setBottomPopupType(null)
   }
 
   const chapters = [1, 2, 3, 4]
@@ -972,56 +1030,85 @@ export default function RuthPage() {
     return texts
   }
 
-  // Get all text as continuous flow for reading mode
-  const getAllTextContinuous = () => {
-    let allText = ''
-    const allConcepts: Array<{ position: number; concept: { emoji: string; explanation: string; type: 'concept' | 'key' } }> = []
+
+
+  // Get text with inline concept emojis for continuous reading mode
+  const getContinuousTextWithInlineEmojis = () => {
+    const allElements: React.ReactNode[] = []
     
     for (let chapter = 1; chapter <= 4; chapter++) {
       const chapterData = ruthText[`chapter${chapter}` as keyof typeof ruthText] as { verses: Record<string, string> }
       if (chapterData?.verses) {
-        const chapterText = Object.values(chapterData.verses).join(' ')
-        
-        // Track concepts in this text
-        Object.entries(RUTH_CONCEPTS).forEach(([keyword, concept]) => {
-          try {
-            // Escape special regex characters in the keyword
-            const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-            const regex = new RegExp(`\\b${escapedKeyword}\\b`, 'gi')
-            let match
-            while ((match = regex.exec(chapterText)) !== null) {
-              allConcepts.push({
-                position: allText.length + match.index,
-                concept
-              })
+        Object.entries(chapterData.verses).forEach(([verseNum, verseText]) => {
+          // Process the verse text for clickable links
+          const processedText = makeTextClickable(verseText)
+          
+          // Find concepts in this specific verse
+          const verseConcepts: Array<{ emoji: string; explanation: string; type: 'concept' | 'key'; bibleReferences?: string[] }> = []
+          Object.entries(RUTH_CONCEPTS).forEach(([keyword, concept]) => {
+            try {
+              const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+              const regex = new RegExp(`\\b${escapedKeyword}\\b`, 'gi')
+              if (regex.test(verseText)) {
+                // Only add if not already added for this verse
+                if (!verseConcepts.find(c => c.emoji === concept.emoji)) {
+                  verseConcepts.push(concept)
+                }
+              }
+            } catch (error) {
+              console.warn(`Failed to process keyword "${keyword}":`, error)
             }
-          } catch (error) {
-            console.warn(`Failed to process keyword "${keyword}":`, error)
+          })
+          
+          // Add the verse text
+          allElements.push(
+            <span key={`${chapter}-${verseNum}-text`} className="mr-1">
+              {processedText}
+            </span>
+          )
+          
+          // Add concept emojis inline after the verse if any found
+          if (verseConcepts.length > 0) {
+            allElements.push(
+              <span key={`${chapter}-${verseNum}-concepts`} className="inline-flex items-center space-x-1 mx-0.5 sm:mx-1">
+                {verseConcepts.map((concept, index) => (
+                  <button
+                    key={`${chapter}-${verseNum}-${index}`}
+                    onClick={() => handleConceptClick(concept)}
+                    className="text-base hover:scale-110 transition-all duration-200 cursor-pointer p-0.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                    title={`${concept.type === 'key' ? 'Key to Understanding' : 'Concept'}`}
+                  >
+                    {concept.emoji}
+                  </button>
+                ))}
+              </span>
+            )
           }
+          
+          // Add a space between verses
+          allElements.push(<span key={`${chapter}-${verseNum}-space`}> </span>)
         })
-        
-        allText += chapterText + ' '
       }
     }
     
-    return { text: allText.trim(), concepts: allConcepts }
+    return allElements
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Sticky Header */}
       <div className="sticky top-0 z-30 bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between h-14">
-            <div className="flex items-center space-x-4">
-              <Link href="/bible" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+            <div className="flex items-center space-x-4 min-w-0">
+              <Link href="/bible" className="text-gray-600 hover:text-gray-900 text-sm font-medium whitespace-nowrap">
                 ← Bible
               </Link>
-              <h1 className="text-lg font-bold text-gray-900">
+              <h1 className="text-lg font-bold text-gray-900 truncate">
                 {ruthText.title}
               </h1>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 flex-shrink-0">
               <LanguageSwitcher />
               <TextToSpeech 
                 chapters={getChapterTexts()}
@@ -1031,7 +1118,7 @@ export default function RuthPage() {
                   // No chapter change needed in continuous mode
                 }}
                 currentChapter={1}
-                isPaused={isTooltipOpen}
+                isPaused={isTooltipOpen || showBottomPopup}
                 onPauseChange={(_paused) => {
                   // This will be called when audio is paused/resumed
                 }}
@@ -1041,9 +1128,9 @@ export default function RuthPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-2 sm:py-4">
         {/* Navigation */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-4 sm:mb-6">
           <Link 
             href="/"
             className="text-blue-600 hover:text-blue-800 font-semibold mr-6"
@@ -1059,13 +1146,13 @@ export default function RuthPage() {
         </div>
 
         {/* Reading Mode Toggle */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="max-w-4xl mx-auto mb-4 sm:mb-8">
+          <div className="bg-white rounded-lg shadow-md p-2 sm:p-4">
             <div className="flex items-center justify-between">
-              <span className="text-lg font-medium text-gray-700">
+              <span className="text-base sm:text-lg font-medium text-gray-700">
                 {language === 'no' ? 'Lesevisning' : 'Reading Mode'}
               </span>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 <span className={`text-sm ${!showChapterVerse ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
                   {language === 'no' ? 'Løpende tekst' : 'Continuous Text'}
                 </span>
@@ -1087,42 +1174,42 @@ export default function RuthPage() {
         </div>
 
         {/* Content */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto px-0 sm:px-0">
           {showChapterVerse ? (
             /* Chapter & Verse Mode */
-            <div className="space-y-12">
+            <div className="space-y-6 sm:space-y-12">
               {chapters.map((chapterNum) => {
                 const chapterData = ruthText[`chapter${chapterNum}` as keyof typeof ruthText] as { title: string; verses: Record<string, string> }
                 
                 return (
-                  <div key={chapterNum} className="bg-white rounded-3xl shadow-2xl p-8">
+                  <div key={chapterNum} className="bg-white rounded-3xl shadow-2xl p-2 sm:p-8">
                     {/* Chapter Title */}
-                    <div className="text-center mb-8">
-                      <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    <div className="text-center mb-4 sm:mb-8">
+                      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                         {chapterData?.title ?? ''}
                       </h2>
-                      <div className="text-lg text-gray-500">
+                      <div className="text-base sm:text-lg text-gray-500">
                         {language === 'no' ? `Kapittel ${chapterNum}` : `Chapter ${chapterNum}`}
                       </div>
                     </div>
 
                     {/* Verses */}
-                    <div className="space-y-6">
+                    <div className="space-y-3 sm:space-y-6">
                       {Object.entries(chapterData?.verses ?? {}).map(([verseNum, text]) => (
-                        <div key={`${chapterNum}-${verseNum}`} className="border-l-4 border-blue-200 pl-6">
+                        <div key={`${chapterNum}-${verseNum}`} className="pl-1 sm:pl-6">
                           <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-4 flex-1">
-                              <span className="text-2xl font-bold text-blue-600 min-w-[3rem]">
+                            <div className="flex items-start space-x-0.5 sm:space-x-4 flex-1">
+                              <span className="text-lg sm:text-2xl font-bold text-blue-600 min-w-[1.5rem] sm:min-w-[3rem]">
                                 {verseNum}
                               </span>
                               <div className="flex-1">
-                                <p className="text-lg text-gray-800 leading-relaxed">
+                                <p className="text-base sm:text-lg text-gray-800 leading-relaxed">
                                   {makeTextClickable(text)}
                                 </p>
                               </div>
                             </div>
                                                          {/* Concept Emojis on the Right */}
-                             <div className="flex flex-col sm:flex-row items-start sm:items-center ml-4 gap-1 sm:gap-0">
+                             <div className="flex flex-col sm:flex-row items-start sm:items-center ml-1 sm:ml-2 gap-1 sm:gap-0">
                                {getVerseEmojis(text, handleConceptClick)}
                              </div>
                           </div>
@@ -1135,48 +1222,21 @@ export default function RuthPage() {
             </div>
           ) : (
             /* Continuous Reading Mode */
-            <div className="bg-white rounded-3xl shadow-2xl p-8">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            <div className="bg-white rounded-3xl shadow-2xl p-2 sm:p-8">
+              <div className="text-center mb-4 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {ruthText.title}
                 </h2>
-                <div className="text-lg text-gray-500">
+                <div className="text-base sm:text-lg text-gray-500">
                   {language === 'no' ? 'Hele boken' : 'Complete Book'}
                 </div>
               </div>
               
               <div className="relative">
-                <div className="text-lg text-gray-800 leading-relaxed space-y-4">
-                  {(() => {
-                    const { text, concepts } = getAllTextContinuous()
-                    const processedText = makeTextClickable(text)
-                    
-                    return (
-                      <div className="flex">
-                        <div className="flex-1 pr-2 sm:pr-8">
-                          <p className="text-justify leading-8">
-                            {processedText}
-                          </p>
-                        </div>
-                        {/* All Concept Emojis on the Right Side */}
-                        <div className="flex flex-col sm:flex-row flex-wrap gap-1 sm:gap-2 w-16 sm:w-32">
-                          {Array.from(new Set(concepts.map(c => c.concept.emoji))).map((emoji, index) => {
-                            const concept = concepts.find(c => c.concept.emoji === emoji)?.concept
-                            return concept ? (
-                              <button
-                                key={index}
-                                onClick={(event) => handleConceptClick(concept, event)}
-                                className="text-lg sm:text-2xl hover:scale-125 transition-all duration-200 cursor-pointer p-1 sm:p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 shadow-sm hover:shadow-lg"
-                                title={`${concept.type === 'key' ? 'Key to Understanding' : 'Concept'}`}
-                              >
-                                {emoji}
-                              </button>
-                            ) : null
-                          })}
-                        </div>
-                      </div>
-                    )
-                  })()}
+                <div className="text-lg text-gray-800 leading-relaxed">
+                  <p className="text-justify leading-8">
+                    {getContinuousTextWithInlineEmojis()}
+                  </p>
                 </div>
               </div>
             </div>
@@ -1229,7 +1289,7 @@ export default function RuthPage() {
                    }
                  </h3>
                  <button
-                   onClick={() => setShowBottomPopup(false)}
+                   onClick={closeBottomPopup}
                    className="p-2 rounded-full hover:bg-gray-100 transition-colors"
                  >
                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1296,7 +1356,7 @@ export default function RuthPage() {
                        <Link
                          href="/map"
                          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                         onClick={() => setShowBottomPopup(false)}
+                         onClick={closeBottomPopup}
                        >
                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
@@ -1356,7 +1416,6 @@ export default function RuthPage() {
           concept={conceptTooltip}
           isOpen={isTooltipOpen}
           onClose={closeTooltip}
-          clickPosition={clickPosition}
         />
       </div>
     </div>

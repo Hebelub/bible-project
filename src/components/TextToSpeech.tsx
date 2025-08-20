@@ -16,8 +16,39 @@ interface TextToSpeechProps {
 export function TextToSpeech({ chapters, startChapter, language, className = '', onChapterChange, currentChapter, isPaused = false, onPauseChange }: TextToSpeechProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [chapterIndex, setChapterIndex] = useState(Math.max(0, Math.min(chapters.length - 1, startChapter - 1)))
+  const [chapterIndex, setChapterIndex] = useState(() => {
+    // Try to restore from sessionStorage first
+    const saved = sessionStorage.getItem('tts-chapter-index')
+    if (saved !== null) {
+      const index = parseInt(saved, 10)
+      if (index >= 0 && index < chapters.length) {
+        return index
+      }
+    }
+    return Math.max(0, Math.min(chapters.length - 1, startChapter - 1))
+  })
+  const [currentTime, setCurrentTime] = useState(() => {
+    // Try to restore current time from sessionStorage
+    const saved = sessionStorage.getItem('tts-current-time')
+    return saved ? parseFloat(saved) : 0
+  })
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const wasPlayingBeforePause = useRef(false)
+
+  // Save session state
+  const saveSessionState = () => {
+    if (audioRef.current) {
+      sessionStorage.setItem('tts-chapter-index', chapterIndex.toString())
+      sessionStorage.setItem('tts-current-time', audioRef.current.currentTime.toString())
+    }
+  }
+
+  // Restore audio position
+  const restoreAudioPosition = () => {
+    if (audioRef.current && currentTime > 0) {
+      audioRef.current.currentTime = currentTime
+    }
+  }
 
   async function playChapter(index: number) {
     const chapterNumber = index + 1
@@ -36,8 +67,14 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
         // Use pre-generated audio
         if (audioRef.current) {
           audioRef.current.src = preGeneratedUrl
+          // Restore position if this is the same chapter
+          if (index === chapterIndex) {
+            restoreAudioPosition()
+          }
           void audioRef.current.play()
           setIsPlaying(true)
+          // Save state after starting
+          setTimeout(saveSessionState, 100)
         }
       } else {
         // Fallback to generating audio on-demand
@@ -65,8 +102,14 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
           const audioBlob = new Blob([Uint8Array.from(atob(result.audio), c => c.charCodeAt(0))], { type: 'audio/mp3' })
           const audioUrl = URL.createObjectURL(audioBlob)
           audioRef.current.src = audioUrl
+          // Restore position if this is the same chapter
+          if (index === chapterIndex) {
+            restoreAudioPosition()
+          }
           void audioRef.current.play()
           setIsPlaying(true)
+          // Save state after starting
+          setTimeout(saveSessionState, 100)
         }
       }
     } catch (err) {
@@ -84,6 +127,15 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
 
     const handlePlay = () => setIsPlaying(true)
     const handlePause = () => setIsPlaying(false)
+    const handleTimeUpdate = () => {
+      if (audioRef.current) {
+        setCurrentTime(audioRef.current.currentTime)
+        // Save position every 5 seconds
+        if (Math.floor(audioRef.current.currentTime) % 5 === 0) {
+          saveSessionState()
+        }
+      }
+    }
     const handleEnded = () => {
       setIsPlaying(false)
       const nextIndex = chapterIndex + 1
@@ -97,6 +149,7 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
 
     audio.addEventListener('play', handlePlay)
     audio.addEventListener('pause', handlePause)
+    audio.addEventListener('timeupdate', handleTimeUpdate)
     audio.addEventListener('ended', handleEnded)
 
     return () => {
@@ -113,6 +166,9 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
       audioRef.current.currentTime = 0
       setIsPlaying(false)
       setChapterIndex(Math.max(0, Math.min(chapters.length - 1, startChapter - 1)))
+      // Clear session storage when language changes
+      sessionStorage.removeItem('tts-chapter-index')
+      sessionStorage.removeItem('tts-current-time')
     }
   }, [language, chapters.length, startChapter])
 
@@ -120,9 +176,15 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
   useEffect(() => {
     if (audioRef.current) {
       if (isPaused) {
-        audioRef.current.pause()
-      } else if (isPlaying) {
+        // Remember if we were playing before pause
+        wasPlayingBeforePause.current = isPlaying
+        if (isPlaying) {
+          audioRef.current.pause()
+          saveSessionState()
+        }
+      } else if (wasPlayingBeforePause.current) { // Resume if we were playing before
         void audioRef.current.play()
+        wasPlayingBeforePause.current = false
       }
     }
   }, [isPaused, isPlaying])
@@ -146,28 +208,28 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
   }
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-2 sm:space-y-4 ${className}`}>
       {/* Controls */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2 sm:space-x-3">
         <button
           onClick={handlePlayPause}
           disabled={isGenerating}
-          className="flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md font-medium transition-colors text-lg"
+          className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-6 py-2 sm:py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md font-medium transition-colors text-sm sm:text-lg"
         >
           {isGenerating ? (
             <>
               <span className="animate-spin">⏳</span>
-              <span>Generating...</span>
+              <span className="hidden sm:inline">Generating...</span>
             </>
           ) : isPlaying ? (
             <>
               <span>⏸️</span>
-              <span>Pause</span>
+              <span className="hidden sm:inline">Pause</span>
             </>
           ) : (
             <>
               <span>▶️</span>
-              <span>Play Book</span>
+              <span className="hidden sm:inline">Play Book</span>
             </>
           )}
         </button>
@@ -175,24 +237,11 @@ export function TextToSpeech({ chapters, startChapter, language, className = '',
         <button
           onClick={handleStop}
           disabled={!audioRef.current || isGenerating}
-          className="px-4 py-3 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-300 text-white rounded-md font-medium transition-colors"
+          className="px-3 sm:px-4 py-2 sm:py-3 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-300 text-white rounded-md font-medium transition-colors text-sm"
         >
-          ⏹️ Stop
+          ⏹️ <span className="hidden sm:inline">Stop</span>
         </button>
-
-        <div className="text-sm text-gray-600">
-          {language === 'no' ? 'Norsk' : 'English'} • Chapter {currentChapter}
-        </div>
       </div>
-
-      {/* Progress Indicator */}
-      {isPlaying && (
-        <div className="bg-blue-50 p-3 rounded-lg">
-          <div className="text-sm text-blue-700 font-medium">
-            📖 Reading Chapter {currentChapter} of 4 with Alloy narrator
-          </div>
-        </div>
-      )}
 
       {/* Hidden Audio Element */}
       <audio ref={audioRef} className="hidden" />
