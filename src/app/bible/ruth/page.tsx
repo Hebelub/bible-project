@@ -509,7 +509,7 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
   'eldste': {
     emoji: '👴',
     type: 'concept',
-    explanation: 'Eldste var respekterte samfunnsledere som vitnet og validerte viktige transaksjoner.'
+    explanation: 'Eldste var respekterte samfunnsledere som vitnet og validerte viktige transaksjoner. Deres nærvær sikret at alle juridiske prosedyrer var legitime.'
   },
   'sandal': {
     emoji: '👞',
@@ -521,10 +521,10 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
     type: 'concept',
     explanation: 'Frø representerer fremtidige generasjoner og fortsettelsen av familiens linje. Ruts ekteskap med Boas sikrer fortsettelsen av Elimeleks linje.'
   },
-  'hus': {
+  'hjem': {
     emoji: '🏠',
     type: 'concept',
-    explanation: 'Hus representerer familie, sikkerhet og tilhørighet. Rut finner et hjem med Boas, og No\'omi finner gjenopprettelse gjennom Ruts ekteskap.'
+    explanation: 'Hjem representerer familie, sikkerhet og tilhørighet. Rut finner et hjem med Boas, og No\'omi finner gjenopprettelse gjennom Ruts ekteskap.'
   },
   'brød': {
     emoji: '🍞',
@@ -839,11 +839,66 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
     type: 'key',
     explanation: 'Loven om velsignelser og eder i Guds navn krevde at alle velsignelser og eder ble gjort i Guds navn, og anerkjente Hans autoritet og nærvær. Dette viser ordens hellige natur.'
   },
-  'omsorg for enker og fremmede-norsk': {
-    emoji: '🕊️',
-    type: 'key',
-    explanation: 'Loven om omsorg for enker og fremmede krevde spesiell beskyttelse og forsyning for samfunnets mest sårbare medlemmer. Gud befalte sitt folk å huske deres egen opplevelse som fremmede i Egypt.'
-  }
+     'omsorg for enker og fremmede-norsk': {
+     emoji: '🕊️',
+     type: 'key',
+     explanation: 'Loven om omsorg for enker og fremmede krevde spesiell beskyttelse og forsyning for samfunnets mest sårbare medlemmer. Gud befalte sitt folk å huske deres egen opplevelse som fremmede i Egypt.'
+   },
+   
+   // Additional missing Norwegian concepts
+   'no\'omi': {
+     emoji: '👩',
+     type: 'key',
+     explanation: 'No\'omi betyr "behagelig" eller "søt" på hebraisk. Når hun vender tilbake til Betlehem, ber hun om å bli kalt "Mara" (bitter) fordi hun har mistet mann og sønner.'
+   },
+   'moabittkvinnen': {
+     emoji: '🏔️',
+     type: 'concept',
+     explanation: 'Rut var en moabitt, en fremmed i Israel. Moabitter ble ofte sett på med mistenksomhet, men Ruts troskap og tro viser at Gud aksepterer mennesker fra alle nasjoner.'
+   },
+   'svigerdatter': {
+     emoji: '👰',
+     type: 'concept',
+     explanation: 'En svigerdatter var en viktig del av familien i hebraisk kultur. Ruts forhold til No\'omi viser den dype kjærligheten som kan oppstå mellom svigermødre og svigerdøtre.'
+   },
+   'svigermor': {
+     emoji: '👵',
+     type: 'concept',
+     explanation: 'Svigermor representerer familiens visdom og erfaring. No\'omi blir en guide og støtte for Rut, og viser hvordan familier kan støtte hverandre i vanskelige tider.'
+   },
+   'bygghøsten': {
+     emoji: '🌾',
+     type: 'concept',
+     explanation: 'Bygghøsten markerte begynnelsen på det landbruksårlige året. Denne sesongen var avgjørende for overlevelse og representerte Guds forsyning og velsignelse.'
+   },
+   'hvetehøsten': {
+     emoji: '🌾',
+     type: 'concept',
+     explanation: 'Hvetehøsten kom etter bygghøsten og ga den primære matkilden for året. Denne sesongen representerte overflod og Guds trofasthet i forsyning.'
+   },
+   'treskeplassen': {
+     emoji: '🏚️',
+     type: 'concept',
+     explanation: 'Treskeplassen var hvor korn ble skilt fra agn. Det var også et sted for samfunnssamling og feiring, og ble stedet for Ruts og Boas\' viktige møte.'
+   },
+
+   'efra': {
+     emoji: '🏘️',
+     type: 'concept',
+     explanation: 'Efra er en forkortelse av Efrat, et gammelt navn for Betlehem som betyr "fruktbar." Dette navnet kobler til den fruktbarhet som kommer gjennom Ruts historie.'
+   },
+   'efratitter': {
+     emoji: '🏘️',
+     type: 'concept',
+     explanation: 'Efratitter var innbyggere i Efrat (Betlehem). De tilhørte Judas stamme og var kjent for sin trofasthet til Guds lov og deres rolle i Guds frelsessplan.'
+   },
+
+
+   'velvilje': {
+     emoji: '✨',
+     type: 'key',
+     explanation: 'Velvilje (hen på hebraisk) betyr "gunst" eller "nåde" på hebraisk. Når Boas viser velvilje mot Rut, reflekterer det Guds nåde som arbeider gjennom menneskelige handlinger. Dette ordet viser hvordan Guds gunst utvides til de sårbare og hvordan menneskelig vennlighet reflekterer guddommelig nåde.'
+   }
 }
 
 // Function to make person names and locations clickable (without concepts)
@@ -890,7 +945,6 @@ const TimelineLifespansView = () => {
   const endYear = -820
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [zoom, setZoom] = useState(1)
-  const [scrollLeft, setScrollLeft] = useState(0)
   
   // Interface for lifespan lines
   interface LifespanLine {
@@ -1166,10 +1220,22 @@ function getVerseEmojis(text: string, onConceptClick: (concept: { emoji: string;
   
   // Check for concepts in the text
   Object.entries(RUTH_CONCEPTS).forEach(([keyword, concept]) => {
-    if (text.toLowerCase().includes(keyword.toLowerCase())) {
-      // Avoid duplicates
-      if (!foundConcepts.some(c => c.emoji === concept.emoji)) {
-        foundConcepts.push(concept)
+    // For Norwegian concepts with -norsk suffix, we need to extract the base word
+    if (keyword.endsWith('-norsk')) {
+      const baseWord = keyword.replace('-norsk', '')
+      if (text.toLowerCase().includes(baseWord.toLowerCase())) {
+        // Avoid duplicates
+        if (!foundConcepts.some(c => c.emoji === concept.emoji)) {
+          foundConcepts.push(concept)
+        }
+      }
+    } else {
+      // Regular English concepts
+      if (text.toLowerCase().includes(keyword.toLowerCase())) {
+        // Avoid duplicates
+        if (!foundConcepts.some(c => c.emoji === concept.emoji)) {
+          foundConcepts.push(concept)
+        }
       }
     }
   })
@@ -1242,7 +1308,13 @@ export default function RuthPage() {
           const verseConcepts: Array<{ emoji: string; explanation: string; type: 'concept' | 'key'; bibleReferences?: string[] }> = []
           Object.entries(RUTH_CONCEPTS).forEach(([keyword, concept]) => {
             try {
-              const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+              // For Norwegian concepts with -norsk suffix, we need to extract the base word
+              let searchKeyword = keyword
+              if (keyword.endsWith('-norsk')) {
+                searchKeyword = keyword.replace('-norsk', '')
+              }
+              
+              const escapedKeyword = searchKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
               const regex = new RegExp(`\\b${escapedKeyword}\\b`, 'gi')
               if (regex.test(verseText)) {
                 // Only add if not already added for this verse
