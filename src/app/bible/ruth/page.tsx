@@ -198,41 +198,9 @@ const RUTH_LOCATIONS: Record<string, number> = {
 // Mapping of concepts and keys to understanding in the Book of Ruth
 const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 'concept' | 'key'; bibleReferences?: string[] }> = {
   // Key to understanding - English
-  'gleaning': {
-    emoji: '🌾',
-    type: 'key',
-    explanation: 'Gleaning was a biblical practice where poor people could collect leftover grain from fields after harvest. The Hebrew law required landowners to leave corners and dropped grain for the poor and foreigners (Leviticus 19:9-10, Deuteronomy 24:19-22). This demonstrates God\'s care for the vulnerable and the importance of community responsibility. Ruth\'s ability to glean shows how God provides through His laws.',
-    bibleReferences: ['Leviticus 19:9-10', 'Deuteronomy 24:19-22', 'Ruth 2:2-3', 'Isaiah 17:5-6']
-  },
-  'kinsman-redeemer': {
-    emoji: '💍',
-    type: 'key',
-    explanation: 'A kinsman-redeemer (go\'el - גואל in Hebrew) was a close relative who had the right and responsibility to help family members in need. This included buying back family land, marrying widows to continue the family line, and avenging wrongs. The Hebrew word "gaal" means to redeem, buy back, or act as a kinsman. This concept points to Jesus as our ultimate redeemer who redeems us from sin and death.',
-    bibleReferences: ['Ruth 3:9', 'Ruth 4:1-10', 'Leviticus 25:25-55', 'Deuteronomy 25:5-10', 'Isaiah 59:20', 'Galatians 4:4-5']
-  },
-  'levirate marriage': {
-    emoji: '👰',
-    type: 'key',
-    explanation: 'Levirate marriage was a custom where a man would marry his deceased brother\'s widow to provide her with children and continue his brother\'s family line. This is mentioned in Deuteronomy 25:5-10. It ensured family continuity and provided for widows.',
-    bibleReferences: ['Deuteronomy 25:5-10', 'Genesis 38:8', 'Matthew 22:24']
-  },
-  'redemption': {
-    emoji: '🔄',
-    type: 'key',
-    explanation: 'Redemption in the Bible means to buy back, restore, or deliver. In Ruth\'s story, Boaz redeems both the land and Ruth, providing security and continuing the family line. This foreshadows Christ\'s redemption of humanity.'
-  },
-  'loyalty': {
-    emoji: '🤝',
-    type: 'key',
-    explanation: 'Loyalty (hesed - חסד in Hebrew) is a key theme in Ruth. The Hebrew word "chesed" means loyal love, mercy, and kindness. It\'s not just emotion but action - the kind of love that keeps promises even when it\'s costly. Ruth shows this hesed to Naomi, and God shows hesed to His people. This word appears multiple times in Ruth and throughout the Old Testament.',
-    bibleReferences: ['Ruth 1:8', 'Ruth 2:20', 'Psalm 136', 'Hosea 6:6', 'Micah 6:8', 'Lamentations 3:22']
-  },
-  'chesed': {
-    emoji: '💝',
-    type: 'concept',
-    explanation: 'Chesed (חסד) is the Hebrew word for "kindness" that appears multiple times in Ruth. It means loyal love, mercy, and covenant faithfulness. This word is central to understanding the book\'s theme of God\'s faithful love and human loyalty. Chesed is not just feeling but action - it\'s the kind of love that keeps promises even when it\'s costly.',
-    bibleReferences: ['Ruth 1:8', 'Ruth 2:20', 'Ruth 3:10', 'Psalm 136', 'Hosea 6:6', 'Micah 6:8', 'Lamentations 3:22']
-  },
+
+
+
   'providence': {
     emoji: '👁️',
     type: 'key',
@@ -327,12 +295,6 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
     type: 'concept',
     explanation: 'Family lineage was crucial in Hebrew culture. It determined inheritance, tribal affiliation, and social status. Ruth\'s marriage to Boaz preserves the family line and connects to the messianic line of David.'
   },
-  'foreigner': {
-    emoji: '🌍',
-    type: 'concept',
-    explanation: 'Ruth was a Moabite, a foreigner in Israel. Moabites were often viewed with suspicion, but Ruth\'s loyalty and faith show that God accepts people from all nations. This challenges ethnic and cultural barriers.',
-    bibleReferences: ['Ruth 1:4', 'Ruth 2:6', 'Deuteronomy 24:19-22', 'Isaiah 56:6-7', 'Matthew 28:19-20', 'Acts 10:34-35']
-  },
   'glean': {
     emoji: '🌾',
     type: 'key',
@@ -343,17 +305,7 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
     type: 'key',
     explanation: 'Gleaning was a biblical practice where poor people could collect leftover grain from fields after harvest. This was a form of social welfare commanded by God in Leviticus 19:9-10 and Deuteronomy 24:19-22.'
   },
-  'redeemer': {
-    emoji: '💍',
-    type: 'key',
-    explanation: 'A kinsman-redeemer (go\'el in Hebrew) was a close relative who had the right and responsibility to help family members in need. This included buying back family land, marrying widows to continue the family line, and avenging wrongs.'
-  },
   'blessed': {
-    emoji: '🙏',
-    type: 'concept',
-    explanation: 'Blessings were important in Hebrew culture. They were prayers for God\'s favor and could be given by anyone. Boaz blesses Ruth, and the women bless Naomi when Obed is born.'
-  },
-  'bless': {
     emoji: '🙏',
     type: 'concept',
     explanation: 'Blessings were important in Hebrew culture. They were prayers for God\'s favor and could be given by anyone. Boaz blesses Ruth, and the women bless Naomi when Obed is born.'
@@ -464,21 +416,9 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
     explanation: 'Bethlehem means "House of Bread" in Hebrew (בית לחם). Ironically, during famine, the "house of bread" had no bread, showing the severity of the crisis and God\'s judgment on Israel. Bethlehem was in Judah\'s territory, the royal tribe, and later became the birthplace of the Messiah, showing God\'s redemptive plan.',
     bibleReferences: ['Ruth 1:1', 'Genesis 35:19', 'Micah 5:2', 'Matthew 2:1-6', 'Luke 2:4-7']
   },
-  'obed': {
-    emoji: '👶',
-    type: 'concept',
-    explanation: 'Obed means "servant" and represents the restoration of Naomi\'s family line. His birth brings joy and fulfillment to the story, showing God\'s faithfulness in providing for His people.'
-  },
-  'jesse': {
-    emoji: '👨',
-    type: 'concept',
-    explanation: 'Jesse was Obed\'s son and David\'s father. His mention connects Ruth\'s story to the royal line of David, showing how God works through ordinary people to accomplish His purposes.'
-  },
-  'david': {
-    emoji: '👑',
-    type: 'concept',
-    explanation: 'David was Israel\'s greatest king and a type of Christ. His mention at the end of Ruth shows how this story of loyalty and redemption points to the ultimate redemption through Christ.'
-  },
+
+
+
   
   // Concepts - Norwegian
   'hungersnød': {
@@ -648,6 +588,261 @@ const RUTH_CONCEPTS: Record<string, { emoji: string; explanation: string; type: 
     emoji: '🏠',
     type: 'concept',
     explanation: 'Betlehem betyr "Brødets hus" på hebraisk. Det var der Gud hadde gitt forsyning til sitt folk, men Elimelek valgte å stole på Moabs ressurser i stedet for Guds trofasthet. Dette reflekterer Israels åndelige tilstand under dommernes periode.'
+  },
+
+  // NEW: Name Meanings and Biblical Insights
+  'naomi': {
+    emoji: '👩',
+    type: 'key',
+    explanation: 'Naomi means "pleasant" or "sweet" in Hebrew. When she returns to Bethlehem, she asks to be called "Mara" (bitter) because she has lost her husband and sons. This name change reflects her emotional state and the transformation from pleasant to bitter, showing how suffering can change our perspective on life and God.',
+    bibleReferences: ['Ruth 1:20-21', 'Ruth 1:2', 'Job 3:20', 'Lamentations 1:4']
+  },
+  'mara': {
+    emoji: '😔',
+    type: 'key',
+    explanation: 'Mara means "bitter" in Hebrew. Naomi asks to be called this name when she returns to Bethlehem, saying "the Almighty has made my life very bitter." This reflects her grief and how she perceives God\'s hand in her suffering, though the story ultimately shows God\'s redemptive plan.',
+    bibleReferences: ['Ruth 1:20-21', 'Exodus 15:23', 'Job 3:20', 'Lamentations 1:4']
+  },
+  'ruth': {
+    emoji: '🌹',
+    type: 'key',
+    explanation: 'Ruth means "friend" or "companion" in Hebrew, though some scholars suggest it may mean "satisfied" or "beauty." Her name perfectly reflects her character - she is a loyal friend to Naomi and becomes a companion who satisfies Naomi\'s need for family. Ruth\'s loyalty and kindness embody the Hebrew concept of hesed.',
+    bibleReferences: ['Ruth 1:4', 'Ruth 1:16-17', 'Proverbs 18:24', 'John 15:13']
+  },
+  'boaz': {
+    emoji: '🏗️',
+    type: 'key',
+    explanation: 'Boaz means "in him is strength" or "swiftness" in Hebrew. His name reflects his character as a strong, capable man who acts quickly and decisively to help Ruth and Naomi. He embodies the ideal of a kinsman-redeemer and demonstrates strength through kindness and obedience to God\'s law.',
+    bibleReferences: ['Ruth 2:1', 'Ruth 3:11', 'Ruth 4:1-10', 'Proverbs 31:23']
+  },
+  'orpa': {
+    emoji: '👋',
+    type: 'concept',
+    explanation: 'Orpah means "back of the neck" or "stubborn" in Hebrew. She represents the choice to return to her own people and gods, contrasting with Ruth\'s choice to stay with Naomi and follow the God of Israel. Her decision, while understandable, shows the difference between cultural loyalty and spiritual commitment.',
+    bibleReferences: ['Ruth 1:4', 'Ruth 1:14-15', 'Joshua 24:15', 'Matthew 10:37']
+  },
+  'mahlon': {
+    emoji: '💔',
+    type: 'concept',
+    explanation: 'Mahlon means "sickly" or "weak" in Hebrew. His name suggests he may have been ill or frail, which could explain his early death. His marriage to Ruth produced no children, leading to the need for a kinsman-redeemer to continue his family line.',
+    bibleReferences: ['Ruth 1:2', 'Ruth 1:5', 'Ruth 4:10', 'Deuteronomy 25:5-10']
+  },
+  'kilion': {
+    emoji: '💔',
+    type: 'concept',
+    explanation: 'Kilion means "consumption" or "wasting away" in Hebrew. Like his brother Mahlon, his name suggests frailty or illness. Both brothers died young in Moab, leaving their wives childless and creating the need for redemption.',
+    bibleReferences: ['Ruth 1:2', 'Ruth 1:5', 'Ruth 4:10', 'Deuteronomy 25:5-10']
+  },
+  'obed': {
+    emoji: '👶',
+    type: 'key',
+    explanation: 'Obed means "servant" or "worshipper" in Hebrew. His birth represents the restoration of Naomi\'s family line and God\'s faithfulness. Obed becomes the grandfather of King David, showing how God works through ordinary people to accomplish His purposes and fulfill His promises.',
+    bibleReferences: ['Ruth 4:17', 'Ruth 4:21-22', '1 Samuel 16:1', 'Matthew 1:5']
+  },
+
+  // NEW: Central Biblical Words with Deep Meaning
+  'hesed': {
+    emoji: '💝',
+    type: 'key',
+    explanation: 'Hesed (חסד) is one of the most important words in the Hebrew Bible, meaning "loving-kindness," "mercy," "loyalty," and "covenant faithfulness." It appears multiple times in Ruth and describes the kind of love that keeps promises even when it\'s costly. This word appears 248 times in the Old Testament and is central to understanding God\'s character and the book\'s theme.',
+    bibleReferences: ['Ruth 1:8', 'Ruth 2:20', 'Ruth 3:10', 'Psalm 136', 'Hosea 6:6', 'Micah 6:8', 'Lamentations 3:22']
+  },
+  'your people': {
+    emoji: '👥',
+    type: 'key',
+    explanation: 'When Ruth says "Your people shall be my people," she is making a profound commitment to Naomi\'s nation, culture, and God. This goes beyond personal loyalty to a complete identification with Israel and Yahweh. This phrase shows the depth of Ruth\'s conversion and commitment.',
+    bibleReferences: ['Ruth 1:16', 'Ruth 2:11', 'Exodus 19:5-6', 'Deuteronomy 7:6', '1 Peter 2:9-10']
+  },
+  'hen': {
+    emoji: '✨',
+    type: 'key',
+    explanation: 'Hen (חן) means "favor" or "grace" in Hebrew. When Boaz shows favor to Ruth, it reflects God\'s grace working through human actions. This word appears in Ruth 2:2 and 2:10, showing how God\'s favor is extended to the vulnerable and how human kindness reflects divine grace.',
+    bibleReferences: ['Ruth 2:2', 'Ruth 2:10', 'Proverbs 3:34', 'Proverbs 11:16', 'Luke 1:30', 'Acts 7:46']
+  },
+  'redeemer': {
+    emoji: '💍',
+    type: 'key',
+    explanation: 'The Hebrew word "go\'el" (גואל) means "kinsman-redeemer" and appears 13 times in Ruth. A redeemer was a close relative who had the right and responsibility to help family members in need. This concept points to Jesus as our ultimate redeemer who redeems us from sin and death.',
+    bibleReferences: ['Ruth 2:20', 'Ruth 3:9', 'Ruth 4:1-10', 'Leviticus 25:25-55', 'Isaiah 59:20', 'Galatians 4:4-5']
+  },
+  'bless': {
+    emoji: '🙏',
+    type: 'key',
+    explanation: 'Blessing (ברך - barak) in Hebrew culture was more than words - it was believed to have real power to bring about what was spoken. Blessings were prayers for God\'s favor and could be given by anyone. The blessings in Ruth show how God works through human words and actions.',
+    bibleReferences: ['Ruth 2:4', 'Ruth 2:19', 'Ruth 3:10', 'Ruth 4:11-12', 'Genesis 12:2-3', 'Numbers 6:24-26']
+  },
+  'foreigner': {
+    emoji: '🌍',
+    type: 'key',
+    explanation: 'Ruth was a Moabite, a foreigner in Israel. The Hebrew word "nokri" (נכרי) emphasizes her outsider status. Yet God accepts her through her faith and loyalty, showing that God\'s covenant extends to all who trust in Him, regardless of their ethnic background.',
+    bibleReferences: ['Ruth 1:4', 'Ruth 2:6', 'Deuteronomy 24:19-22', 'Isaiah 56:6-7', 'Matthew 28:19-20', 'Acts 10:34-35']
+  },
+  'loyalty': {
+    emoji: '🤝',
+    type: 'key',
+    explanation: 'Loyalty in Ruth is expressed through the Hebrew word "dabaq" (דבק) meaning "to cling" or "stick to." Ruth\'s loyalty to Naomi goes beyond cultural expectations and shows the kind of commitment that reflects God\'s faithful love. This loyalty becomes the foundation for God\'s redemptive plan.',
+    bibleReferences: ['Ruth 1:14', 'Ruth 1:16-17', 'Genesis 2:24', 'Deuteronomy 10:20', 'Psalm 63:8', 'Matthew 19:5']
+  },
+  'house of israel': {
+    emoji: '🏛️',
+    type: 'key',
+    explanation: 'The "house of Israel" refers to the covenant community of God\'s chosen people. When Ruth joins this house, she becomes part of God\'s redemptive story. This phrase emphasizes the corporate nature of God\'s covenant and how individuals become part of the larger story of salvation.',
+    bibleReferences: ['Ruth 4:11', 'Exodus 19:3-6', '2 Samuel 7:11-16', 'Jeremiah 31:31-34', 'Romans 11:17-24']
+  },
+
+  // NEW: Proverbs 31 Connection
+  'eshet chayil': {
+    emoji: '👑',
+    type: 'key',
+    explanation: 'When Boaz calls Ruth an "eshet chayil" (woman of valor), he uses the same expression found in Proverbs 31:10. This phrase describes a woman of strength, character, and virtue. Ruth embodies these qualities through her loyalty, hard work, and faithfulness, making her a living example of the Proverbs 31 woman.',
+    bibleReferences: ['Ruth 3:11', 'Proverbs 31:10-31', 'Proverbs 12:4', 'Proverbs 31:25', '1 Corinthians 16:13']
+  },
+
+  // NEW: Cultural and Biblical Practices
+  'uncovering feet': {
+    emoji: '🦶',
+    type: 'key',
+    explanation: 'When Ruth uncovers Boaz\'s feet, this is a symbolic gesture of submission and a request for marriage. In ancient Near Eastern culture, sleeping at someone\'s feet was a sign of loyalty and a way to request protection. This act shows Ruth\'s trust in Boaz and her understanding of the cultural customs.',
+    bibleReferences: ['Ruth 3:4', 'Ruth 3:7-8', '1 Samuel 24:3', 'Ezekiel 16:8', 'Deuteronomy 23:10-11']
+  },
+  'spread corner of covering': {
+    emoji: '🫂',
+    type: 'key',
+    explanation: 'Ruth\'s request for Boaz to "spread the corner of your covering over me" is a marriage proposal using the imagery of a man\'s garment covering his wife. This symbolizes protection, provision, and marital commitment. The Hebrew word "kanaph" (כנף) means "wing" or "corner" and represents shelter and security.',
+    bibleReferences: ['Ruth 3:9', 'Ezekiel 16:8', 'Deuteronomy 22:30', 'Malachi 2:16', '1 Corinthians 7:2']
+  },
+
+  // NEW: Historical Context
+  'days when judges ruled': {
+    emoji: '⚖️',
+    type: 'key',
+    explanation: 'The opening phrase "In the days when the judges ruled" sets the historical context of moral and spiritual chaos. Judges 21:25 says "everyone did what was right in their own eyes." Against this backdrop of lawlessness, Ruth\'s story shows God working to provide a good king (David) and restore order through faithfulness and obedience to His law.',
+    bibleReferences: ['Ruth 1:1', 'Judges 21:25', 'Judges 2:11-19', '1 Samuel 8:1-9', '2 Samuel 7:8-16', 'Psalm 78:70-72']
+  },
+
+  // NEW: Mosaic Laws Explained
+  'law of gleaning': {
+    emoji: '🌾',
+    type: 'key',
+    explanation: 'The Law of Gleaning required landowners to leave the corners of their fields and any dropped grain for the poor and foreigners. This law demonstrated God\'s care for the vulnerable and taught generosity. Ruth\'s ability to glean shows how God provides through His laws and how obedience to these laws creates opportunities for blessing.',
+    bibleReferences: ['Leviticus 19:9-10', 'Deuteronomy 24:19-21', 'Ruth 2:2-3', 'Isaiah 17:5-6', 'Jeremiah 49:9']
+  },
+  'kinsman-redeemer law': {
+    emoji: '💍',
+    type: 'key',
+    explanation: 'The Kinsman-Redeemer Law (go\'el) gave close relatives the right and responsibility to help family members in need. This included buying back family land, marrying widows to continue the family line, and avenging wrongs. This law shows God\'s concern for family continuity and land stewardship.',
+    bibleReferences: ['Leviticus 25:25-28', 'Ruth 2:20', 'Ruth 3:9', 'Ruth 4:1-10', 'Isaiah 59:20', 'Galatians 4:4-5']
+  },
+  'levirate marriage': {
+    emoji: '👰',
+    type: 'key',
+    explanation: 'Levirate Marriage required a man to marry his deceased brother\'s widow to provide her with children and continue his brother\'s family line. This law ensured family continuity and provided for widows. While not directly applied in Ruth, it provides the cultural background for understanding the need for a kinsman-redeemer.',
+    bibleReferences: ['Deuteronomy 25:5-10', 'Ruth 4:5-6', 'Genesis 38:8', 'Matthew 22:24', 'Mark 12:19']
+  },
+  'redemption of land': {
+    emoji: '🏠',
+    type: 'key',
+    explanation: 'The Law of Redemption of Land allowed family members to buy back land that had been sold due to poverty. This law ensured that family property remained within the tribe and prevented permanent loss of inheritance. Boaz\'s redemption of Elimelek\'s land shows obedience to this law and God\'s concern for family inheritance.',
+    bibleReferences: ['Leviticus 25:23-28', 'Ruth 4:3-6', 'Numbers 36:1-13', 'Jeremiah 32:6-15', 'Ezekiel 46:16-18']
+  },
+  'blessings and oaths': {
+    emoji: '📜',
+    type: 'key',
+    explanation: 'The Law of Blessings and Oaths in God\'s Name required that all blessings and oaths be made in God\'s name, acknowledging His authority and presence. This law shows the sacred nature of words and the importance of invoking God\'s name in serious matters. The blessings in Ruth follow this pattern.',
+    bibleReferences: ['Deuteronomy 6:13', 'Deuteronomy 10:20', 'Ruth 2:4', 'Ruth 3:13', 'Exodus 20:7', 'Matthew 5:33-37']
+  },
+  'care for widows and foreigners': {
+    emoji: '🕊️',
+    type: 'key',
+    explanation: 'The Law of Care for Widows and Foreigners required special protection and provision for society\'s most vulnerable members. God commanded His people to remember their own experience as foreigners in Egypt and to show compassion. Ruth\'s story demonstrates how these laws work in practice.',
+    bibleReferences: ['Deuteronomy 10:18', 'Deuteronomy 24:17-18', 'Ruth 2:2-3', 'Exodus 22:22-24', 'Psalm 146:9', 'James 1:27']
+  },
+
+  // Norwegian translations for new concepts
+  'naomi-norsk': {
+    emoji: '👩',
+    type: 'key',
+    explanation: 'Naomi betyr "behagelig" eller "søt" på hebraisk. Når hun vender tilbake til Betlehem, ber hun om å bli kalt "Mara" (bitter) fordi hun har mistet mann og sønner. Dette navneskiftet reflekterer hennes følelsesmessige tilstand og transformasjonen fra behagelig til bitter.'
+  },
+  'mara-norsk': {
+    emoji: '😔',
+    type: 'key',
+    explanation: 'Mara betyr "bitter" på hebraisk. Naomi ber om å bli kalt dette navnet når hun vender tilbake til Betlehem, og sier at "den Allmektige har gjort mitt liv svært bittert." Dette reflekterer hennes sorg og hvordan hun oppfatter Guds hånd i lidelsen.'
+  },
+  'ruth-norsk': {
+    emoji: '🌹',
+    type: 'key',
+    explanation: 'Rut betyr "venn" eller "følgesvenn" på hebraisk. Hennes navn reflekterer perfekt hennes karakter - hun er en trofast venn til No\'omi og blir en følgesvenn som tilfredsstiller No\'omis behov for familie.'
+  },
+  'boaz-norsk': {
+    emoji: '🏗️',
+    type: 'key',
+    explanation: 'Boas betyr "i ham er styrke" eller "hurtighet" på hebraisk. Hans navn reflekterer hans karakter som en sterk, dyktig mann som handler raskt og besluttsomt for å hjelpe Rut og No\'omi.'
+  },
+  'obed-norsk': {
+    emoji: '👶',
+    type: 'key',
+    explanation: 'Obed betyr "tjener" eller "tilbeder" på hebraisk. Hans fødsel representerer gjenopprettelsen av No\'omis familielinje og Guds trofasthet. Obed blir bestefar til kong David.'
+  },
+  'hesed-norsk': {
+    emoji: '💝',
+    type: 'key',
+    explanation: 'Hesed (חסד) er et av de viktigste ordene i den hebraiske Bibelen, og betyr "kjærlighetens godhet," "barmhjertighet," "trofasthet" og "pakts trofasthet." Det vises flere ganger i Rut og beskriver den typen kjærlighet som holder løfter selv når det er kostbart.'
+  },
+  'ditt folk-norsk': {
+    emoji: '👥',
+    type: 'key',
+    explanation: 'Når Rut sier "Ditt folk skal være mitt folk," gjør hun en dyp forpliktelse til No\'omis nasjon, kultur og Gud. Dette går utover personlig trofasthet til en fullstendig identifikasjon med Israel og Jahve.'
+  },
+  'velsignelse-norsk': {
+    emoji: '🙏',
+    type: 'key',
+    explanation: 'Velsignelse (ברך - barak) i hebraisk kultur var mer enn ord - det ble trodd å ha reell kraft til å bringe frem det som ble sagt. Velsignelser var bønner om Guds gunst og kunne gis av hvem som helst.'
+  },
+  'fremmed-norsk': {
+    emoji: '🌍',
+    type: 'key',
+    explanation: 'Rut var en moabitt, en fremmed i Israel. Men Gud aksepterer henne gjennom hennes tro og trofasthet, og viser at Guds pakt utvides til alle som stoler på Ham, uansett deres etniske bakgrunn.'
+  },
+  'trofasthet-norsk': {
+    emoji: '🤝',
+    type: 'key',
+    explanation: 'Trofasthet i Rut uttrykkes gjennom det hebraiske ordet "dabaq" (דבק) som betyr "å klamre seg til" eller "holde seg til." Ruts trofasthet til No\'omi går utover kulturelle forventninger.'
+  },
+  'dommernes tid-norsk': {
+    emoji: '⚖️',
+    type: 'key',
+    explanation: 'Åpningsfrasen "I de dager da dommerne dømte" setter den historiske konteksten av moralsk og åndelig kaos. Dommerne 21:25 sier at "alle gjorde det som var rett i sine egne øyne."'
+  },
+  'etterlesningsloven-norsk': {
+    emoji: '🌾',
+    type: 'key',
+    explanation: 'Etterlesningsloven krevde at grunneiere lot hjørnene av sine åkrer og eventuelt falt korn stå tilbake for de fattige og fremmede. Denne loven demonstrerte Guds omsorg for de sårbare.'
+  },
+  'løsningsmannsloven-norsk': {
+    emoji: '💍',
+    type: 'key',
+    explanation: 'Løsningsmannsloven (go\'el) ga nære slektninger rett og ansvar for å hjelpe familiemedlemmer i nød. Dette inkluderte å kjøpe tilbake familiens land og gifte seg med enker.'
+  },
+  'leverat ekteskap-norsk': {
+    emoji: '👰',
+    type: 'key',
+    explanation: 'Levirat ekteskap krevde at en mann giftet seg med sin avdøde brors enke for å gi henne barn og fortsette brorens familielinje. Denne loven sikret familiens kontinuitet og ga omsorg for enker.'
+  },
+  'landløsningsloven-norsk': {
+    emoji: '🏠',
+    type: 'key',
+    explanation: 'Landløsningsloven tillot familiemedlemmer å kjøpe tilbake land som var blitt solgt på grunn av fattigdom. Denne loven sikret at familieeiendom forble innenfor stammen.'
+  },
+  'velsignelser og eder-norsk': {
+    emoji: '📜',
+    type: 'key',
+    explanation: 'Loven om velsignelser og eder i Guds navn krevde at alle velsignelser og eder ble gjort i Guds navn, og anerkjente Hans autoritet og nærvær. Dette viser ordens hellige natur.'
+  },
+  'omsorg for enker og fremmede-norsk': {
+    emoji: '🕊️',
+    type: 'key',
+    explanation: 'Loven om omsorg for enker og fremmede krevde spesiell beskyttelse og forsyning for samfunnets mest sårbare medlemmer. Gud befalte sitt folk å huske deres egen opplevelse som fremmede i Egypt.'
   }
 }
 
