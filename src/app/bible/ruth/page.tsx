@@ -886,8 +886,8 @@ function makeTextClickable(text: string) {
 
 // Timeline Lifespans View Component for Popup
 const TimelineLifespansView = () => {
-  const startYear = -1200
-  const endYear = -900
+  const startYear = -1920
+  const endYear = -820
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [zoom, setZoom] = useState(1)
   const [scrollLeft, setScrollLeft] = useState(0)

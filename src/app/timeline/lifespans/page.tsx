@@ -50,7 +50,7 @@ export default function TimelineLifespansPage() {
   // Book time ranges
   const bookTimeRanges: Record<string, { start: number; end: number }> = {
     'all': { start: -4000, end: 100 },
-    'ruth': { start: -1200, end: -900 } // Appropriate time period for Ruth to include relevant genealogy
+    'ruth': { start: -1920, end: -820 } // Appropriate time period for Ruth to include relevant genealogy
   }
 
   // Restore settings from localStorage and handle URL params
