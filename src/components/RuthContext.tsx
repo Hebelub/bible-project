@@ -242,7 +242,7 @@ export function RuthContext() {
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-2xl border border-amber-200 overflow-hidden">
+    <div className="bg-white shadow-2xl border border-amber-200 overflow-hidden">
       {/* Tab Navigation */}
       <div className="flex border-b border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
         {tabs.map((tab) => (
