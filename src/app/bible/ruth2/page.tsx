@@ -14,11 +14,8 @@ export default function Ruth2Page() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [followMode, setFollowMode] = useState(false);
 
-  const audioRef = useRef<HTMLAudioElement>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const textContainerRef = useRef<HTMLDivElement>(null);
 
@@ -34,17 +31,17 @@ useEffect(() => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [followMode]);
   
-  // ✅ Always scroll when currentWordIndex changes if followMode is on
-  useEffect(() => {
-    if (followMode && currentWordIndex >= 0) {
-      scrollToCurrentWord(currentWordIndex);
-    }
-  }, [currentWordIndex, followMode]);
+    // ✅ Always scroll when highlighted word changes if followMode is on
+    useEffect(() => {
+        if (followMode && currentWordIndex >= 0) {
+            scrollToCurrentWord(currentWordIndex);
+        }
+    }, [currentWordIndex, followMode]);
   
   // Function to scroll to current word if follow mode is on
   const scrollToCurrentWord = (wordIndex: number) => {
     const wordElement = wordRefs.current[wordIndex];
-    if (followMode && wordElement) {
+    if (wordElement) {
       const wordTop =
         wordElement.getBoundingClientRect().top + window.scrollY;
       const windowHeight = window.innerHeight;
@@ -55,7 +52,6 @@ useEffect(() => {
       });
     }
   };
-  
 
   // Function to get all text as one continuous string
   const getAllText = () => {
@@ -99,25 +95,6 @@ useEffect(() => {
 
     // Track word timing (approximate)
     let wordIndex = 0;
-    const words = getWordsWithPositions().filter((w) => !w.isSpace);
-
-    // Calculate approximate time per word based on rate
-    const wordsPerMinute = 150 * playbackRate; // Base rate of 150 WPM
-    const msPerWord = (60 * 1000) / wordsPerMinute;
-
-    // Set up timer-based word progression for more reliable scrolling
-    const wordTimer = setInterval(() => {
-      if (isPlaying && wordIndex < words.length) {
-        setCurrentWordIndex(wordIndex);
-
-        // Scroll to current word if follow mode is on
-        scrollToCurrentWord(wordIndex);
-
-        wordIndex++;
-      } else if (wordIndex >= words.length) {
-        clearInterval(wordTimer);
-      }
-    }, msPerWord);
 
     utterance.onboundary = (event) => {
       if (event.name === "word") {
@@ -127,14 +104,11 @@ useEffect(() => {
     };
 
     utterance.onend = () => {
-      clearInterval(wordTimer);
       setIsPlaying(false);
       setCurrentWordIndex(-1);
-      setCurrentTime(0);
     };
 
     utterance.onpause = () => {
-      clearInterval(wordTimer);
       setIsPlaying(false);
     };
 
@@ -178,7 +152,6 @@ useEffect(() => {
     window.speechSynthesis.cancel();
     setIsPlaying(false);
     setCurrentWordIndex(-1);
-    setCurrentTime(0);
   };
 
   // Click to play from position
@@ -200,24 +173,6 @@ useEffect(() => {
 
     let currentIndex = wordIndex;
 
-    // Calculate approximate time per word based on rate
-    const wordsPerMinute = 150 * playbackRate; // Base rate of 150 WPM
-    const msPerWord = (60 * 1000) / wordsPerMinute;
-
-    // Set up timer-based word progression for more reliable scrolling
-    const wordTimer = setInterval(() => {
-      if (isPlaying && currentIndex < words.length) {
-        setCurrentWordIndex(currentIndex);
-
-        // Scroll to current word if follow mode is on
-        scrollToCurrentWord(currentIndex);
-
-        currentIndex++;
-      } else if (currentIndex >= words.length) {
-        clearInterval(wordTimer);
-      }
-    }, msPerWord);
-
     utterance.onboundary = (event) => {
       if (event.name === "word") {
         setCurrentWordIndex(currentIndex);
@@ -226,14 +181,11 @@ useEffect(() => {
     };
 
     utterance.onend = () => {
-      clearInterval(wordTimer);
       setIsPlaying(false);
       setCurrentWordIndex(-1);
-      setCurrentTime(0);
     };
 
     utterance.onpause = () => {
-      clearInterval(wordTimer);
       setIsPlaying(false);
     };
 
@@ -276,44 +228,19 @@ useEffect(() => {
 
       let wordIndex = currentPosition;
 
-      // Calculate approximate time per word based on rate
-      const wordsPerMinute = 150 * playbackRate; // Base rate of 150 WPM
-      const msPerWord = (60 * 1000) / wordsPerMinute;
-
-      // Set up timer-based word progression for more reliable scrolling
-      const wordTimer = setInterval(() => {
-        if (isPlaying && wordIndex < words.length) {
-          setCurrentWordIndex(wordIndex);
-
-          // Scroll to current word if follow mode is on
-          scrollToCurrentWord(wordIndex);
-
-          wordIndex++;
-        } else if (wordIndex >= words.length) {
-          clearInterval(wordTimer);
-        }
-      }, msPerWord);
-
       utterance.onboundary = (event) => {
         if (event.name === "word") {
           setCurrentWordIndex(wordIndex);
-
-          // Scroll to current word if follow mode is on
-          scrollToCurrentWord(wordIndex);
-
           wordIndex++;
         }
       };
 
       utterance.onend = () => {
-        clearInterval(wordTimer);
         setIsPlaying(false);
         setCurrentWordIndex(-1);
-        setCurrentTime(0);
       };
 
       utterance.onpause = () => {
-        clearInterval(wordTimer);
         setIsPlaying(false);
       };
 
