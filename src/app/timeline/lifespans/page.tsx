@@ -44,21 +44,36 @@ export default function TimelineLifespansPage() {
   const [endYear, setEndYear] = useState(100)
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [selectedBook, setSelectedBook] = useState<string>('all')
+  const [zoom, setZoom] = useState(1)
+  const [scrollLeft, setScrollLeft] = useState(0)
 
   // Book time ranges
   const bookTimeRanges: Record<string, { start: number; end: number }> = {
     'all': { start: -4000, end: 100 },
-    'ruth': { start: -1200, end: -1000 } // Approximate time period for Ruth
+    'ruth': { start: -1920, end: -820 } // Appropriate time period for Ruth to include relevant genealogy
   }
 
-  // Restore settings from localStorage
+  // Restore settings from localStorage and handle URL params
   useEffect(() => {
-    const savedBook = localStorage.getItem('timelineSelectedBook')
-    if (savedBook && bookTimeRanges[savedBook]) {
-      setSelectedBook(savedBook)
-      const range = bookTimeRanges[savedBook]
+    // Check for URL query parameter first
+    const urlParams = new URLSearchParams(window.location.search)
+    const bookParam = urlParams.get('book')
+    
+    if (bookParam && bookTimeRanges[bookParam]) {
+      setSelectedBook(bookParam)
+      const range = bookTimeRanges[bookParam]
       setStartYear(range.start)
       setEndYear(range.end)
+      localStorage.setItem('timelineSelectedBook', bookParam)
+    } else {
+      // Fall back to localStorage
+      const savedBook = localStorage.getItem('timelineSelectedBook')
+      if (savedBook && bookTimeRanges[savedBook]) {
+        setSelectedBook(savedBook)
+        const range = bookTimeRanges[savedBook]
+        setStartYear(range.start)
+        setEndYear(range.end)
+      }
     }
   }, [])
 
@@ -79,9 +94,31 @@ export default function TimelineLifespansPage() {
 
   // Create lifespan lines for the lifespan view
   const createLifespanLines = (): LifespanLine[] => {
-    const people = genealogyData.filter(person => 
-      person.birthYear >= startYear && person.deathYear <= endYear
-    )
+    const people = genealogyData.filter(person => {
+      // Include people from the selected time period
+      const inTimePeriod = person.birthYear >= startYear && person.deathYear <= endYear
+      
+      // If "ruth" is selected, include all people mentioned in the Book of Ruth
+      if (selectedBook === 'ruth') {
+        // Include specific people mentioned in Ruth's story
+        const ruthCharacters = ['Ruth', 'Boaz', 'Naomi', 'Elimelech', 'Mahlon', 'Chilion', 'Kilion', 'Orpah', 'Obed', 'Jesse', 'David', 'Salmon', 'Rahab']
+        const isRuthCharacter = ruthCharacters.some(name => 
+          person.name.toLowerCase().includes(name.toLowerCase()) ||
+          name.toLowerCase().includes(person.name.toLowerCase())
+        )
+        
+        // Include people from the genealogy at the end of Ruth (Perez to David)
+        const ruthGenealogy = ['Perez', 'Hezron', 'Ram', 'Amminadab', 'Nahshon', 'Salmon', 'Boaz', 'Obed', 'Jesse', 'David', 'Salma', 'Salmon', 'Kilion']
+        const isInRuthGenealogy = ruthGenealogy.some(name => 
+          person.name.toLowerCase().includes(name.toLowerCase()) ||
+          name.toLowerCase().includes(person.name.toLowerCase())
+        )
+        
+        return isRuthCharacter || isInRuthGenealogy
+      }
+      
+      return inTimePeriod
+    })
     
     const lines: LifespanLine[] = []
     const totalYears = endYear - startYear
@@ -162,6 +199,23 @@ export default function TimelineLifespansPage() {
 
         {/* Controls */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          {/* Zoom Controls */}
+          <div className="flex items-center justify-center space-x-4 mb-6">
+            <button
+              onClick={() => setZoom(Math.max(0.5, zoom - 0.2))}
+              className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-md font-medium"
+            >
+              🔍 Zoom Out
+            </button>
+            <span className="text-lg font-medium text-gray-700">{Math.round(zoom * 100)}%</span>
+            <button
+              onClick={() => setZoom(Math.min(3, zoom + 0.2))}
+              className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-md font-medium"
+            >
+              🔍 Zoom In
+            </button>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Book Selection */}
             <div>
@@ -174,7 +228,7 @@ export default function TimelineLifespansPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Time Periods</option>
-                <option value="ruth">Book of Ruth</option>
+                <option value="ruth">Book of Ruth (All Characters)</option>
               </select>
             </div>
 
@@ -211,6 +265,11 @@ export default function TimelineLifespansPage() {
               <div className="text-sm text-gray-600 space-y-1">
                 <div>Total People: {lifespanLines.length}</div>
                 <div>Time Span: {formatYear(startYear)} - {formatYear(endYear)}</div>
+                {selectedBook === 'ruth' && (
+                  <div className="text-blue-600 font-medium">
+                    Showing all Book of Ruth characters
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -221,7 +280,12 @@ export default function TimelineLifespansPage() {
           {/* Timeline Header */}
           <div className="mb-4">
             <div className="flex justify-between text-sm text-gray-600 mb-2">
-              <span>View complete lifespans as horizontal lines</span>
+              <span>
+                {selectedBook === 'ruth' 
+                  ? 'Showing all people from the Book of Ruth and genealogy' 
+                  : 'View complete lifespans as horizontal lines'
+                }
+              </span>
               <span>Click on lines for details</span>
             </div>
             {/* Gender Legend */}
@@ -238,13 +302,13 @@ export default function TimelineLifespansPage() {
           </div>
 
           {/* Lifespans View */}
-          <div className="relative overflow-x-auto">
+          <div className="relative overflow-x-auto" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}>
             {/* Year markers */}
-            <div className="flex mb-4 border-b border-gray-300 pb-2">
+            <div className="flex mb-4 border-b border-gray-300 pb-2" style={{ minWidth: `${(endYear - startYear) * 2}px` }}>
               {Array.from({ length: Math.ceil((endYear - startYear) / 100) + 1 }, (_, i) => {
                 const year = startYear + i * 100
                 return (
-                  <div key={year} className="flex-shrink-0 text-xs text-gray-500 font-medium" style={{ width: '100px' }}>
+                  <div key={year} className="flex-shrink-0 text-xs text-gray-500 font-medium" style={{ width: '200px' }}>
                     {formatYear(year)}
                   </div>
                 )
@@ -252,7 +316,7 @@ export default function TimelineLifespansPage() {
             </div>
 
             {/* Lifespan lines */}
-            <div className="relative" style={{ height: `${Math.max(lifespanLines.length * 60, 400)}px` }}>
+            <div className="relative" style={{ height: `${Math.max(lifespanLines.length * 60, 400)}px`, minWidth: `${(endYear - startYear) * 2}px` }}>
               {lifespanLines.map((line, index) => {
                 const startPercent = getLifespanPosition(line.startYear)
                 const endPercent = getLifespanPosition(line.endYear)
