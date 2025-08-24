@@ -275,38 +275,38 @@ export default function Ruth2Page() {
       <div className="sticky top-0 z-40 border-b border-amber-200 bg-white shadow-sm">
         <div className="mx-auto max-w-6xl px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              {/* Book and Translation */}
-              <div className="flex items-center space-x-3">
-                <div className="h-8 w-2 rounded-full bg-gradient-to-b from-amber-500 to-orange-500"></div>
-                <div>
-                  <h2 className="text-lg font-semibold text-amber-900">
-                    {ruthText.title}
-                  </h2>
-                  <div className="mt-1 flex space-x-2">
-                    <button
-                      onClick={() => setLanguage("en")}
-                      className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
-                        language === "en"
-                          ? "bg-amber-500 text-white"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
-                    >
-                      EN ⋅ NIV
-                    </button>
-                    <button
-                      onClick={() => setLanguage("no")}
-                      className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
-                        language === "no"
-                          ? "bg-amber-500 text-white"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
-                    >
-                      NO ⋅ NB11
-                    </button>
-                  </div>
-                </div>
+            {/* Book Title - Left Side */}
+            <div className="flex items-center space-x-3">
+              <div className="h-8 w-2 rounded-full bg-gradient-to-b from-amber-500 to-orange-500"></div>
+              <div>
+                <h2 className="text-lg font-semibold text-amber-900">
+                  {ruthText.title}
+                </h2>
               </div>
+            </div>
+            
+            {/* Language Buttons - Right Side */}
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setLanguage("en")}
+                className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
+                  language === "en"
+                    ? "bg-amber-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                EN ⋅ NIV
+              </button>
+              <button
+                onClick={() => setLanguage("no")}
+                className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
+                  language === "no"
+                    ? "bg-amber-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                NO ⋅ NB11
+              </button>
             </div>
           </div>
         </div>
