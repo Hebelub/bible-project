@@ -16,6 +16,7 @@ export default function Ruth2Page() {
 
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const textContainerRef = useRef<HTMLDivElement>(null);
+  const isProgrammaticScrollRef = useRef(false);
 
   // ✅ Always scroll when highlighted word changes if followMode is on
   useEffect(() => {
@@ -24,26 +25,49 @@ export default function Ruth2Page() {
     }
   }, [currentWordIndex, followMode]);
 
-  let ignoreUserScroll = false;
+  // Auto-disable follow mode when user scrolls manually in text container
+  useEffect(() => {
+    const handleScroll = (event: Event) => {
+      // Only disable follow mode if it's user-initiated scrolling, not programmatic
+      if (followMode && event.target === textContainerRef.current && !isProgrammaticScrollRef.current) {
+        setFollowMode(false);
+      }
+    };
+  
+    // Add scroll listener only to the text container, not the window
+    const textContainer = textContainerRef.current;
+    if (textContainer) {
+      textContainer.addEventListener('scroll', handleScroll, { passive: true });
+      return () => textContainer.removeEventListener('scroll', handleScroll);
+    }
+  }, [followMode]);
 
+  // Function to scroll to current word if follow mode is on
   const scrollToCurrentWord = (wordIndex: number) => {
     const wordElement = wordRefs.current[wordIndex];
     if (wordElement) {
-      const wordTop = wordElement.getBoundingClientRect().top + window.scrollY;
-      const windowHeight = window.innerHeight;
-      const scrollTop = wordTop - windowHeight / 2;
-  
-      // Temporarily ignore user input
-      ignoreUserScroll = true;
-      window.scrollTo({
-        top: scrollTop,
-        behavior: "smooth",
-      });
-  
-      // Re-enable user scroll detection after a short delay
-      setTimeout(() => {
-        ignoreUserScroll = false;
-      }, 300); // ~duration of smooth scroll
+      // Get the text container's scrollable area
+      const textContainer = textContainerRef.current;
+      if (textContainer) {
+        // Mark this as programmatic scrolling to prevent follow mode from being disabled
+        isProgrammaticScrollRef.current = true;
+        
+        // Calculate the word's position relative to the text container
+        const wordTop = wordElement.offsetTop;
+        const containerHeight = textContainer.clientHeight;
+        const scrollTop = wordTop - (containerHeight / 2);
+        
+        // Scroll the text container, not the window
+        textContainer.scrollTo({
+          top: scrollTop,
+          behavior: "smooth",
+        });
+        
+        // Reset the flag after scrolling completes
+        setTimeout(() => {
+          isProgrammaticScrollRef.current = false;
+        }, 300); // ~duration of smooth scroll
+      }
     }
   };
 
@@ -66,26 +90,6 @@ export default function Ruth2Page() {
     }
     return fullText;
   };
-
-  useEffect(() => {
-    const handleUserScrollStart = () => {
-        if (!ignoreUserScroll && followMode) {
-          setFollowMode(false);
-        }
-      };
-
-    window.addEventListener("wheel", handleUserScrollStart, { passive: true });
-    window.addEventListener("touchstart", handleUserScrollStart, {
-      passive: true,
-    });
-    window.addEventListener("keydown", handleUserScrollStart);
-
-    return () => {
-      window.removeEventListener("wheel", handleUserScrollStart);
-      window.removeEventListener("touchstart", handleUserScrollStart);
-      window.removeEventListener("keydown", handleUserScrollStart);
-    };
-  }, [followMode, ignoreUserScroll]);
 
   // Function to split text into words with positions
   const getWordsWithPositions = () => {
@@ -270,9 +274,9 @@ export default function Ruth2Page() {
   const words = getWordsWithPositions();
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 overflow-hidden">
       {/* Top Bar */}
-      <div className="sticky top-0 z-40 border-b border-amber-200 bg-white shadow-sm">
+      <div className="flex-shrink-0 z-40 border-b border-amber-200 bg-white shadow-sm">
         <div className="mx-auto max-w-6xl px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Book Title - Left Side */}
@@ -312,12 +316,12 @@ export default function Ruth2Page() {
         </div>
       </div>
 
-      <div className="container mx-auto flex-1 px-0 py-0">
-        {/* Bible Text Content */}
-        <div className="mx-auto w-full max-w-5xl">
-          <div className="overflow-hidden rounded-none border-0 bg-white shadow-2xl md:border md:border-amber-100">
+      {/* Bible Text Content - Takes remaining space */}
+      <div className="flex-1 min-h-0 px-0 py-0">
+        <div className="mx-auto w-full max-w-5xl h-full">
+          <div className="h-full overflow-hidden rounded-none border-0 bg-white shadow-2xl md:border md:border-amber-100">
             {/* Text content */}
-            <div className="px-4 py-8 md:px-12 md:py-12" ref={textContainerRef}>
+            <div className="h-full overflow-y-auto px-4 py-8 md:px-12 md:py-12" ref={textContainerRef}>
               <div className="prose prose-xl max-w-none">
                 <div className="text-justify font-serif text-lg leading-relaxed text-gray-800">
                   {words.map((wordObj, index) => {
@@ -363,7 +367,7 @@ export default function Ruth2Page() {
       </div>
 
       {/* Fixed Bottom Context Component */}
-      <div className="fixed right-0 bottom-0 left-0 z-50">
+      <div className="flex-shrink-0 z-50">
         {/* Slider Handle */}
         <div
           className="flex h-8 cursor-pointer items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg transition-all duration-200 hover:from-amber-600 hover:to-orange-600"
@@ -398,7 +402,7 @@ export default function Ruth2Page() {
         {/* Context Panel */}
         <div
           className={`overflow-hidden bg-white transition-all duration-300 ease-in-out ${
-            isContextOpen ? "max-h-[500px]" : "max-h-0"
+            isContextOpen ? "max-h-[300px]" : "max-h-0"
           }`}
         >
           <div className="mx-auto max-w-6xl">
@@ -531,9 +535,6 @@ export default function Ruth2Page() {
           </div>
         </div>
       </div>
-
-      {/* Bottom padding to prevent content from being hidden behind fixed context */}
-      <div className="h-[600px]"></div>
     </div>
   );
 }
