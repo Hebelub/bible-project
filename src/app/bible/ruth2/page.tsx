@@ -1,0 +1,547 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { useLanguage } from "~/contexts/LanguageContext";
+import { getRuthText } from "~/lib/language";
+import { RuthContext } from "~/components/RuthContext";
+
+export default function Ruth2Page() {
+  const { language, setLanguage } = useLanguage();
+  const ruthText = getRuthText(language);
+  const [isContextOpen, setIsContextOpen] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(-1);
+  const playbackRate = 1;
+  const [followMode, setFollowMode] = useState(true);
+
+  const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const isProgrammaticScrollRef = useRef(false);
+
+  // ✅ Always scroll when highlighted word changes if followMode is on
+  useEffect(() => {
+    if (followMode && currentWordIndex >= 0) {
+      scrollToCurrentWord(currentWordIndex);
+    }
+  }, [currentWordIndex, followMode]);
+
+  // Auto-disable follow mode when user scrolls manually in text container
+  useEffect(() => {
+    const handleScroll = (event: Event) => {
+      // Only disable follow mode if it's user-initiated scrolling, not programmatic
+      if (
+        followMode &&
+        event.target === textContainerRef.current &&
+        !isProgrammaticScrollRef.current
+      ) {
+        setFollowMode(false);
+      }
+    };
+
+    // Add scroll listener only to the text container, not the window
+    const textContainer = textContainerRef.current;
+    if (textContainer) {
+      textContainer.addEventListener("scroll", handleScroll, { passive: true });
+      return () => textContainer.removeEventListener("scroll", handleScroll);
+    }
+  }, [followMode]);
+
+  // Function to scroll to current word if follow mode is on
+  const scrollToCurrentWord = (wordIndex: number) => {
+    const wordElement = wordRefs.current[wordIndex];
+    if (wordElement) {
+      // Get the text container's scrollable area
+      const textContainer = textContainerRef.current;
+      if (textContainer) {
+        // Mark this as programmatic scrolling to prevent follow mode from being disabled
+        isProgrammaticScrollRef.current = true;
+
+        // Calculate the word's position relative to the text container
+        const wordTop = wordElement.offsetTop;
+        const containerHeight = textContainer.clientHeight;
+        const scrollTop = wordTop - containerHeight / 2;
+
+        // Scroll the text container, not the window
+        textContainer.scrollTo({
+          top: scrollTop,
+          behavior: "smooth",
+        });
+
+        // Reset the flag after scrolling completes
+        setTimeout(() => {
+          isProgrammaticScrollRef.current = false;
+        }, 300); // ~duration of smooth scroll
+      }
+    }
+  };
+
+  // Function to get all text as one continuous string
+  const getAllText = () => {
+    let fullText = "";
+    for (let chapter = 1; chapter <= 4; chapter++) {
+      const chapterData = ruthText[
+        `chapter${chapter}` as keyof typeof ruthText
+      ] as { title: string; verses: Record<string, string> };
+      if (chapterData?.verses) {
+        // Add chapter title
+        fullText += chapterData.title + "\n\n";
+        // Add all verses
+        Object.values(chapterData.verses).forEach((verse) => {
+          fullText += verse + " ";
+        });
+        fullText += "\n\n";
+      }
+    }
+    return fullText;
+  };
+
+  // Function to split text into words with positions
+  const getWordsWithPositions = () => {
+    const text = getAllText();
+    const words = text.split(/(\s+)/);
+    return words.map((word, index) => ({
+      word,
+      index,
+      isSpace: /^\s+$/.test(word),
+    }));
+  };
+
+  // Function to create audio from text
+  const createAudioFromText = () => {
+    const text = getAllText();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = language === "no" ? "nb-NO" : "en-US";
+    utterance.rate = playbackRate;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    // Track word timing (approximate)
+    let wordIndex = 0;
+
+    utterance.onboundary = (event) => {
+      if (event.name === "word") {
+        setCurrentWordIndex(wordIndex);
+        wordIndex++;
+      }
+    };
+
+    utterance.onend = () => {
+      setIsPlaying(false);
+      setCurrentWordIndex(-1);
+    };
+
+    utterance.onpause = () => {
+      setIsPlaying(false);
+    };
+
+    utterance.onresume = () => {
+      setIsPlaying(true);
+    };
+
+    return utterance;
+  };
+
+  // Play/pause functionality
+  const togglePlayback = () => {
+    if (isPlaying) {
+      window.speechSynthesis.pause();
+      setIsPlaying(false);
+    } else {
+      if (window.speechSynthesis.speaking) {
+        // Resume from current marked position, not from where it was paused
+        stopPlayback();
+        if (currentWordIndex >= 0) {
+          playFromWord(currentWordIndex);
+        } else {
+          const utterance = createAudioFromText();
+          window.speechSynthesis.speak(utterance);
+        }
+      } else {
+        // If we have a marked position, start from there, otherwise start from beginning
+        if (currentWordIndex >= 0) {
+          playFromWord(currentWordIndex);
+        } else {
+          const utterance = createAudioFromText();
+          window.speechSynthesis.speak(utterance);
+        }
+      }
+      setIsPlaying(true);
+    }
+  };
+
+  // Stop functionality
+  const stopPlayback = () => {
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+    setCurrentWordIndex(-1);
+  };
+
+  // Click to play from position
+  const playFromWord = (wordIndex: number) => {
+    stopPlayback();
+
+    // Create new utterance from the clicked word onwards
+    const words = getWordsWithPositions().filter((w) => !w.isSpace);
+    const remainingText = words
+      .slice(wordIndex)
+      .map((w) => w.word)
+      .join(" ");
+
+    const utterance = new SpeechSynthesisUtterance(remainingText);
+    utterance.lang = language === "no" ? "nb-NO" : "en-US";
+    utterance.rate = playbackRate;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    let currentIndex = wordIndex;
+
+    utterance.onboundary = (event) => {
+      if (event.name === "word") {
+        setCurrentWordIndex(currentIndex);
+        currentIndex++;
+      }
+    };
+
+    utterance.onend = () => {
+      setIsPlaying(false);
+      setCurrentWordIndex(-1);
+    };
+
+    utterance.onpause = () => {
+      setIsPlaying(false);
+    };
+
+    utterance.onresume = () => {
+      setIsPlaying(true);
+    };
+
+    window.speechSynthesis.speak(utterance);
+    setIsPlaying(true);
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  // Update playback rate
+  useEffect(() => {
+    if (window.speechSynthesis.speaking && isPlaying) {
+      // Store current position before changing rate
+      const currentPosition = currentWordIndex;
+
+      // Pause current speech
+      window.speechSynthesis.pause();
+
+      // Create new utterance with new rate, starting from current position
+      const words = getWordsWithPositions().filter((w) => !w.isSpace);
+      const remainingText = words
+        .slice(currentPosition)
+        .map((w) => w.word)
+        .join(" ");
+
+      const utterance = new SpeechSynthesisUtterance(remainingText);
+      utterance.lang = language === "no" ? "nb-NO" : "en-US";
+      utterance.rate = playbackRate;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+
+      let wordIndex = currentPosition;
+
+      utterance.onboundary = (event) => {
+        if (event.name === "word") {
+          setCurrentWordIndex(wordIndex);
+          wordIndex++;
+        }
+      };
+
+      utterance.onend = () => {
+        setIsPlaying(false);
+        setCurrentWordIndex(-1);
+      };
+
+      utterance.onpause = () => {
+        setIsPlaying(false);
+      };
+
+      utterance.onresume = () => {
+        setIsPlaying(true);
+      };
+
+      // Speak the remaining text with new rate
+      window.speechSynthesis.speak(utterance);
+    }
+  }, [playbackRate]);
+
+  const words = getWordsWithPositions();
+
+  return (
+    <div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+      {/* Top Bar */}
+      <div className="z-40 flex-shrink-0 border-b border-amber-200 bg-white shadow-sm">
+        <div className="mx-auto max-w-6xl px-4 py-3">
+          <div className="flex items-center justify-between">
+            {/* Book Title - Left Side */}
+            <div className="flex items-center space-x-3">
+              <div className="h-8 w-2 rounded-full bg-gradient-to-b from-amber-500 to-orange-500"></div>
+              <div>
+                <h2 className="text-lg font-semibold text-amber-900">
+                  {ruthText.title}
+                </h2>
+              </div>
+            </div>
+
+            {/* Language Buttons - Right Side */}
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setLanguage("en")}
+                className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
+                  language === "en"
+                    ? "bg-amber-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                EN ⋅ NIV
+              </button>
+              <button
+                onClick={() => setLanguage("no")}
+                className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
+                  language === "no"
+                    ? "bg-amber-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                NO ⋅ NB11
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bible Text Content - Takes remaining space */}
+      <div className="min-h-0 flex-1 px-0 py-0">
+        <div className="mx-auto h-full w-full max-w-5xl">
+          <div className="h-full overflow-hidden rounded-none border-0 bg-white shadow-2xl md:border md:border-amber-100">
+            {/* Text content */}
+            <div
+              className="h-full overflow-y-auto px-4 py-8 md:px-12 md:py-12"
+              ref={textContainerRef}
+            >
+              <div className="prose prose-xl max-w-none">
+                <div className="text-justify font-serif text-lg leading-relaxed text-gray-800">
+                  {words.map((wordObj, index) => {
+                    if (wordObj.isSpace) {
+                      return <span key={index}>{wordObj.word}</span>;
+                    }
+
+                    // Calculate word index consistently with audio tracking
+                    const wordIndex =
+                      words.slice(0, index + 1).filter((w) => !w.isSpace)
+                        .length - 1;
+                    const isCurrentWord = currentWordIndex === wordIndex;
+
+                    return (
+                      <span
+                        key={index}
+                        ref={(el) => {
+                          wordRefs.current[wordIndex] = el;
+                        }}
+                        onClick={() => {
+                          // Always mark the position
+                          setCurrentWordIndex(wordIndex);
+                          // Only play if already playing
+                          if (isPlaying) {
+                            playFromWord(wordIndex);
+                          }
+                        }}
+                        className={`cursor-pointer transition-all duration-200 ${
+                          isCurrentWord
+                            ? "rounded bg-amber-300 px-1 py-0.5 text-amber-900 shadow-md"
+                            : "rounded px-1 py-0.5 hover:bg-amber-100 hover:text-amber-800"
+                        }`}
+                      >
+                        {wordObj.word}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed Bottom Context Component */}
+      <div className="z-50 flex-shrink-0">
+        {/* Slider Handle */}
+        <div
+          className="flex h-8 cursor-pointer items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg transition-all duration-200 hover:from-amber-600 hover:to-orange-600"
+          onClick={() => setIsContextOpen(!isContextOpen)}
+        >
+          <div className="flex items-center space-x-2 text-white">
+            <svg
+              className={`h-5 w-5 transition-transform duration-200 ${isContextOpen ? "" : "rotate-180"}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 7l-5 5-5-5"
+              />
+            </svg>
+            <span className="text-sm font-medium">
+              {isContextOpen
+                ? language === "no"
+                  ? "Skjul kontekst"
+                  : "Hide context"
+                : language === "no"
+                  ? "Vis kontekst"
+                  : "Show context"}
+            </span>
+          </div>
+        </div>
+
+        {/* Context Panel */}
+        <div
+          className={`overflow-hidden bg-white transition-all duration-300 ease-in-out ${
+            isContextOpen ? "max-h-[300px]" : "max-h-0"
+          }`}
+        >
+          <div className="mx-auto max-w-6xl">
+            <RuthContext />
+          </div>
+        </div>
+
+        {/* Audio Controls - Under Context Component */}
+        <div className="border-t border-amber-200 bg-white shadow-lg">
+          <div className="mx-auto max-w-2xl px-4 py-2">
+            <div className="flex items-center justify-end space-x-4">
+              {/* Reading Position Info - Left Side */}
+              <div className="text-right">
+                <p className="text-xs font-medium tracking-wide text-amber-500 uppercase">
+                  {(() => {
+                    if (currentWordIndex === -1) {
+                      return language === "no" ? "Ikke startet" : "Not started";
+                    }
+
+                    if (isPlaying) {
+                      return language === "no" ? "Leser fra" : "Reading from";
+                    } else {
+                      return language === "no" ? "Lest fra" : "Read from";
+                    }
+                  })()}
+                </p>
+                <p className="text-sm font-medium text-amber-700">
+                  {(() => {
+                    if (currentWordIndex === -1) {
+                      return language === "no"
+                        ? "Klikk play for å starte"
+                        : "Click play to start";
+                    }
+
+                    // Calculate which chapter we're in based on word count
+                    const words = getWordsWithPositions().filter(
+                      (w) => !w.isSpace,
+                    );
+                    const totalWords = words.length;
+                    const wordsPerChapter = Math.ceil(totalWords / 4);
+                    const currentChapter = Math.min(
+                      Math.floor(currentWordIndex / wordsPerChapter) + 1,
+                      4,
+                    );
+
+                    // Calculate approximate verse (every ~20 words = 1 verse)
+                    const wordsPerVerse = 20;
+                    const currentVerse =
+                      Math.floor(
+                        (currentWordIndex % wordsPerChapter) / wordsPerVerse,
+                      ) + 1;
+
+                    return language === "no"
+                      ? `Kapittel ${currentChapter}:${currentVerse}`
+                      : `Chapter ${currentChapter}:${currentVerse}`;
+                  })()}
+                </p>
+              </div>
+
+              {/* Follow Mode Toggle - Eye Icon */}
+              {!followMode && (
+                <button
+                  onClick={() => setFollowMode(true)}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${"bg-amber-500 text-white shadow-lg"}`}
+                  title={
+                    language === "no"
+                      ? "Slå på følgemodus"
+                      : "Turn on follow mode"
+                  }
+                >
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                </button>
+              )}
+
+              {/* Play/Pause Button */}
+              <button
+                onClick={togglePlayback}
+                className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-amber-600 bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg transition-all duration-200 hover:from-amber-600 hover:to-orange-600 hover:shadow-xl"
+                style={{ minWidth: "48px", minHeight: "48px" }}
+              >
+                {isPlaying ? (
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 9v6m4-6v6"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="ml-0.5 h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
