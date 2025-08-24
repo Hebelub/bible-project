@@ -22,33 +22,40 @@ export default function Ruth2Page() {
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const textContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-disable follow mode when user scrolls manually
-  useEffect(() => {
+// Auto-disable follow mode when user scrolls manually
+useEffect(() => {
     const handleScroll = () => {
       if (followMode) {
         setFollowMode(false);
       }
     };
-
+  
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [followMode]);
-
+  
+  // ✅ Always scroll when currentWordIndex changes if followMode is on
+  useEffect(() => {
+    if (followMode && currentWordIndex >= 0) {
+      scrollToCurrentWord(currentWordIndex);
+    }
+  }, [currentWordIndex, followMode]);
+  
   // Function to scroll to current word if follow mode is on
   const scrollToCurrentWord = (wordIndex: number) => {
-    if (followMode && wordRefs.current[wordIndex]) {
-      const wordElement = wordRefs.current[wordIndex];
-      if (wordElement) {
-        const wordTop = wordElement.offsetTop;
-        const windowHeight = window.innerHeight;
-        const scrollTop = wordTop - windowHeight / 2;
-        window.scrollTo({
-          top: scrollTop,
-          behavior: "smooth",
-        });
-      }
+    const wordElement = wordRefs.current[wordIndex];
+    if (followMode && wordElement) {
+      const wordTop =
+        wordElement.getBoundingClientRect().top + window.scrollY;
+      const windowHeight = window.innerHeight;
+      const scrollTop = wordTop - windowHeight / 2;
+      window.scrollTo({
+        top: scrollTop,
+        behavior: "smooth",
+      });
     }
   };
+  
 
   // Function to get all text as one continuous string
   const getAllText = () => {
@@ -377,9 +384,10 @@ export default function Ruth2Page() {
                       return <span key={index}>{wordObj.word}</span>;
                     }
 
-                    const wordIndex =
-                      words.filter((w, i) => i <= index && !w.isSpace).length -
-                      1;
+                    // Calculate word index consistently with audio tracking
+                    const wordIndex = words
+                      .slice(0, index + 1)
+                      .filter((w) => !w.isSpace).length - 1;
                     const isCurrentWord = currentWordIndex === wordIndex;
 
                     return (
