@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { getRuthText } from "~/lib/language";
-import { LanguageSwitcher } from "~/components/LanguageSwitcher";
 import { RuthContext } from "~/components/RuthContext";
 
 export default function Ruth2Page() {
@@ -13,43 +11,39 @@ export default function Ruth2Page() {
   const [isContextOpen, setIsContextOpen] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const [followMode, setFollowMode] = useState(false);
+  const playbackRate = 1;
+  const [followMode, setFollowMode] = useState(true);
 
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const textContainerRef = useRef<HTMLDivElement>(null);
 
-// Auto-disable follow mode when user scrolls manually
-useEffect(() => {
-    const handleScroll = () => {
-      if (followMode) {
-        setFollowMode(false);
-      }
-    };
-  
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [followMode]);
-  
-    // ✅ Always scroll when highlighted word changes if followMode is on
-    useEffect(() => {
-        if (followMode && currentWordIndex >= 0) {
-            scrollToCurrentWord(currentWordIndex);
-        }
-    }, [currentWordIndex, followMode]);
-  
-  // Function to scroll to current word if follow mode is on
+  // ✅ Always scroll when highlighted word changes if followMode is on
+  useEffect(() => {
+    if (followMode && currentWordIndex >= 0) {
+      scrollToCurrentWord(currentWordIndex);
+    }
+  }, [currentWordIndex, followMode]);
+
+  let ignoreUserScroll = false;
+
   const scrollToCurrentWord = (wordIndex: number) => {
     const wordElement = wordRefs.current[wordIndex];
     if (wordElement) {
-      const wordTop =
-        wordElement.getBoundingClientRect().top + window.scrollY;
+      const wordTop = wordElement.getBoundingClientRect().top + window.scrollY;
       const windowHeight = window.innerHeight;
       const scrollTop = wordTop - windowHeight / 2;
+  
+      // Temporarily ignore user input
+      ignoreUserScroll = true;
       window.scrollTo({
         top: scrollTop,
         behavior: "smooth",
       });
+  
+      // Re-enable user scroll detection after a short delay
+      setTimeout(() => {
+        ignoreUserScroll = false;
+      }, 300); // ~duration of smooth scroll
     }
   };
 
@@ -72,6 +66,26 @@ useEffect(() => {
     }
     return fullText;
   };
+
+  useEffect(() => {
+    const handleUserScrollStart = () => {
+        if (!ignoreUserScroll && followMode) {
+          setFollowMode(false);
+        }
+      };
+
+    window.addEventListener("wheel", handleUserScrollStart, { passive: true });
+    window.addEventListener("touchstart", handleUserScrollStart, {
+      passive: true,
+    });
+    window.addEventListener("keydown", handleUserScrollStart);
+
+    return () => {
+      window.removeEventListener("wheel", handleUserScrollStart);
+      window.removeEventListener("touchstart", handleUserScrollStart);
+      window.removeEventListener("keydown", handleUserScrollStart);
+    };
+  }, [followMode, ignoreUserScroll]);
 
   // Function to split text into words with positions
   const getWordsWithPositions = () => {
@@ -312,9 +326,9 @@ useEffect(() => {
                     }
 
                     // Calculate word index consistently with audio tracking
-                    const wordIndex = words
-                      .slice(0, index + 1)
-                      .filter((w) => !w.isSpace).length - 1;
+                    const wordIndex =
+                      words.slice(0, index + 1).filter((w) => !w.isSpace)
+                        .length - 1;
                     const isCurrentWord = currentWordIndex === wordIndex;
 
                     return (
