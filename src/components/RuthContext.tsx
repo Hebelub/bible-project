@@ -152,7 +152,7 @@ export function RuthContext() {
                 </Link>
               </div>
               <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200 hover:shadow-lg transition-shadow duration-200">
-                <h4 className="font-semibold text-amber-900 mb-3 text-lg">No'omi</h4>
+                <h4 className="font-semibold text-amber-900 mb-3 text-lg">No&apos;omi</h4>
                 <p className="text-sm text-amber-800 mb-4 leading-relaxed">
                   {language === 'no' 
                     ? 'Ruts svigermor, vender tilbake fra Moab'
@@ -264,7 +264,7 @@ export function RuthContext() {
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[400px]">
+      <div className="max-h-[400px] overflow-y-auto">
         {renderTabContent()}
       </div>
     </div>
