@@ -29,16 +29,20 @@ export default function Ruth2Page() {
   useEffect(() => {
     const handleScroll = (event: Event) => {
       // Only disable follow mode if it's user-initiated scrolling, not programmatic
-      if (followMode && event.target === textContainerRef.current && !isProgrammaticScrollRef.current) {
+      if (
+        followMode &&
+        event.target === textContainerRef.current &&
+        !isProgrammaticScrollRef.current
+      ) {
         setFollowMode(false);
       }
     };
-  
+
     // Add scroll listener only to the text container, not the window
     const textContainer = textContainerRef.current;
     if (textContainer) {
-      textContainer.addEventListener('scroll', handleScroll, { passive: true });
-      return () => textContainer.removeEventListener('scroll', handleScroll);
+      textContainer.addEventListener("scroll", handleScroll, { passive: true });
+      return () => textContainer.removeEventListener("scroll", handleScroll);
     }
   }, [followMode]);
 
@@ -51,18 +55,18 @@ export default function Ruth2Page() {
       if (textContainer) {
         // Mark this as programmatic scrolling to prevent follow mode from being disabled
         isProgrammaticScrollRef.current = true;
-        
+
         // Calculate the word's position relative to the text container
         const wordTop = wordElement.offsetTop;
         const containerHeight = textContainer.clientHeight;
-        const scrollTop = wordTop - (containerHeight / 2);
-        
+        const scrollTop = wordTop - containerHeight / 2;
+
         // Scroll the text container, not the window
         textContainer.scrollTo({
           top: scrollTop,
           behavior: "smooth",
         });
-        
+
         // Reset the flag after scrolling completes
         setTimeout(() => {
           isProgrammaticScrollRef.current = false;
@@ -274,9 +278,9 @@ export default function Ruth2Page() {
   const words = getWordsWithPositions();
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 overflow-hidden">
+    <div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
       {/* Top Bar */}
-      <div className="flex-shrink-0 z-40 border-b border-amber-200 bg-white shadow-sm">
+      <div className="z-40 flex-shrink-0 border-b border-amber-200 bg-white shadow-sm">
         <div className="mx-auto max-w-6xl px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Book Title - Left Side */}
@@ -288,7 +292,7 @@ export default function Ruth2Page() {
                 </h2>
               </div>
             </div>
-            
+
             {/* Language Buttons - Right Side */}
             <div className="flex space-x-2">
               <button
@@ -317,11 +321,14 @@ export default function Ruth2Page() {
       </div>
 
       {/* Bible Text Content - Takes remaining space */}
-      <div className="flex-1 min-h-0 px-0 py-0">
-        <div className="mx-auto w-full max-w-5xl h-full">
+      <div className="min-h-0 flex-1 px-0 py-0">
+        <div className="mx-auto h-full w-full max-w-5xl">
           <div className="h-full overflow-hidden rounded-none border-0 bg-white shadow-2xl md:border md:border-amber-100">
             {/* Text content */}
-            <div className="h-full overflow-y-auto px-4 py-8 md:px-12 md:py-12" ref={textContainerRef}>
+            <div
+              className="h-full overflow-y-auto px-4 py-8 md:px-12 md:py-12"
+              ref={textContainerRef}
+            >
               <div className="prose prose-xl max-w-none">
                 <div className="text-justify font-serif text-lg leading-relaxed text-gray-800">
                   {words.map((wordObj, index) => {
@@ -367,7 +374,7 @@ export default function Ruth2Page() {
       </div>
 
       {/* Fixed Bottom Context Component */}
-      <div className="flex-shrink-0 z-50">
+      <div className="z-50 flex-shrink-0">
         {/* Slider Handle */}
         <div
           className="flex h-8 cursor-pointer items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg transition-all duration-200 hover:from-amber-600 hover:to-orange-600"
@@ -375,16 +382,16 @@ export default function Ruth2Page() {
         >
           <div className="flex items-center space-x-2 text-white">
             <svg
-              className={`h-5 w-5 transition-transform duration-200 ${isContextOpen ? "rotate-180" : ""}`}
+              className={`h-5 w-5 transition-transform duration-200 ${isContextOpen ? "" : "rotate-180"}`}
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
+              viewBox="0 0 20 20"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M19 9l-7 7-7"
+                d="M15 7l-5 5-5-5"
               />
             </svg>
             <span className="text-sm font-medium">
