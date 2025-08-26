@@ -2,21 +2,40 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "~/contexts/LanguageContext";
-import { getRuthText } from "~/lib/language";
+import { TextLoader } from "~/lib/text-loader";
+import { TextParser, type ParsedText } from "~/lib/text-parser";
 import { RuthContext } from "~/components/RuthContext";
 
 export default function Ruth2Page() {
   const { language, setLanguage } = useLanguage();
-  const ruthText = getRuthText(language);
+  const [ruthText, setRuthText] = useState<ParsedText | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isContextOpen, setIsContextOpen] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
-  const playbackRate = 1;
+  const [playbackRate, setPlaybackRate] = useState(1);
   const [followMode, setFollowMode] = useState(true);
 
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const textContainerRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScrollRef = useRef(false);
+
+  // Load text when language changes
+  useEffect(() => {
+    const loadText = async () => {
+      setIsLoading(true);
+      try {
+        const text = await TextLoader.loadRuthText(language);
+        setRuthText(text);
+      } catch (error) {
+        console.error('Failed to load text:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadText();
+  }, [language]);
 
   // ✅ Always scroll when highlighted word changes if followMode is on
   useEffect(() => {
@@ -77,33 +96,14 @@ export default function Ruth2Page() {
 
   // Function to get all text as one continuous string
   const getAllText = () => {
-    let fullText = "";
-    for (let chapter = 1; chapter <= 4; chapter++) {
-      const chapterData = ruthText[
-        `chapter${chapter}` as keyof typeof ruthText
-      ] as { title: string; verses: Record<string, string> };
-      if (chapterData?.verses) {
-        // Add chapter title
-        fullText += chapterData.title + "\n\n";
-        // Add all verses
-        Object.values(chapterData.verses).forEach((verse) => {
-          fullText += verse + " ";
-        });
-        fullText += "\n\n";
-      }
-    }
-    return fullText;
+    if (!ruthText) return "";
+    return TextParser.getAllText(ruthText);
   };
 
   // Function to split text into words with positions
   const getWordsWithPositions = () => {
-    const text = getAllText();
-    const words = text.split(/(\s+)/);
-    return words.map((word, index) => ({
-      word,
-      index,
-      isSpace: /^\s+$/.test(word),
-    }));
+    if (!ruthText) return [];
+    return TextParser.getWordsWithPositions(ruthText);
   };
 
   // Function to create audio from text
@@ -275,6 +275,18 @@ export default function Ruth2Page() {
     }
   }, [playbackRate]);
 
+  // Show loading state
+  if (isLoading || !ruthText) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+        <div className="text-center">
+          <div className="mb-4 text-2xl text-amber-600">Loading...</div>
+          <div className="text-amber-500">Loading text content</div>
+        </div>
+      </div>
+    );
+  }
+
   const words = getWordsWithPositions();
 
   return (
@@ -336,24 +348,26 @@ export default function Ruth2Page() {
                       return <span key={index}>{wordObj.word}</span>;
                     }
 
-                    // Calculate word index consistently with audio tracking
-                    const wordIndex =
-                      words.slice(0, index + 1).filter((w) => !w.isSpace)
-                        .length - 1;
+                    // Use the word index from the parser
+                    const wordIndex = wordObj.index;
                     const isCurrentWord = currentWordIndex === wordIndex;
 
                     return (
                       <span
                         key={index}
                         ref={(el) => {
-                          wordRefs.current[wordIndex] = el;
+                          if (wordIndex >= 0) {
+                            wordRefs.current[wordIndex] = el;
+                          }
                         }}
                         onClick={() => {
                           // Always mark the position
-                          setCurrentWordIndex(wordIndex);
-                          // Only play if already playing
-                          if (isPlaying) {
-                            playFromWord(wordIndex);
+                          if (wordIndex >= 0) {
+                            setCurrentWordIndex(wordIndex);
+                            // Only play if already playing
+                            if (isPlaying) {
+                              playFromWord(wordIndex);
+                            }
                           }
                         }}
                         className={`cursor-pointer transition-all duration-200 ${
@@ -422,7 +436,7 @@ export default function Ruth2Page() {
           <div className="mx-auto max-w-2xl px-4 py-2">
             <div className="flex items-center justify-end space-x-4">
               {/* Reading Position Info - Left Side */}
-              <div className="text-right">
+              <div className="flex items-center space-x-2">
                 <p className="text-xs font-medium tracking-wide text-amber-500 uppercase">
                   {(() => {
                     if (currentWordIndex === -1) {
@@ -444,27 +458,17 @@ export default function Ruth2Page() {
                         : "Click play to start";
                     }
 
-                    // Calculate which chapter we're in based on word count
-                    const words = getWordsWithPositions().filter(
-                      (w) => !w.isSpace,
-                    );
-                    const totalWords = words.length;
-                    const wordsPerChapter = Math.ceil(totalWords / 4);
-                    const currentChapter = Math.min(
-                      Math.floor(currentWordIndex / wordsPerChapter) + 1,
-                      4,
-                    );
-
-                    // Calculate approximate verse (every ~20 words = 1 verse)
-                    const wordsPerVerse = 20;
-                    const currentVerse =
-                      Math.floor(
-                        (currentWordIndex % wordsPerChapter) / wordsPerVerse,
-                      ) + 1;
+                    // Use the new parser to find exact chapter and verse
+                    const position = TextParser.findChapterAndVerse(ruthText, currentWordIndex);
+                    if (position) {
+                      return language === "no"
+                        ? `${position.chapter}:${position.verse}`
+                        : `${position.chapter}:${position.verse}`;
+                    }
 
                     return language === "no"
-                      ? `Kapittel ${currentChapter}:${currentVerse}`
-                      : `Chapter ${currentChapter}:${currentVerse}`;
+                      ? "Ukjent posisjon"
+                      : "Unknown position";
                   })()}
                 </p>
               </div>
