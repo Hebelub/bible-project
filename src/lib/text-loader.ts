@@ -1,4 +1,4 @@
-import { TextParser, ParsedText } from './text-parser';
+import { TextParser, type ParsedText } from './text-parser';
 
 export class TextLoader {
   /**

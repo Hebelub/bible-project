@@ -409,13 +409,7 @@ export default function Ruth2Page() {
               />
             </svg>
             <span className="text-sm font-medium">
-              {isContextOpen
-                ? language === "no"
-                  ? "Skjul kontekst"
-                  : "Hide context"
-                : language === "no"
-                  ? "Vis kontekst"
-                  : "Show context"}
+              {isContextOpen ? "Hide context" : "Show context"}
             </span>
           </div>
         </div>
@@ -440,35 +434,29 @@ export default function Ruth2Page() {
                 <p className="text-xs font-medium tracking-wide text-amber-500 uppercase">
                   {(() => {
                     if (currentWordIndex === -1) {
-                      return language === "no" ? "Ikke startet" : "Not started";
+                      return "Not started";
                     }
 
                     if (isPlaying) {
-                      return language === "no" ? "Leser fra" : "Reading from";
+                      return "Reading from";
                     } else {
-                      return language === "no" ? "Lest fra" : "Read from";
+                      return "Read from";
                     }
                   })()}
                 </p>
                 <p className="text-sm font-medium text-amber-700">
                   {(() => {
                     if (currentWordIndex === -1) {
-                      return language === "no"
-                        ? "Klikk play for å starte"
-                        : "Click play to start";
+                      return "Click play to start";
                     }
 
                     // Use the new parser to find exact chapter and verse
                     const position = TextParser.findChapterAndVerse(ruthText, currentWordIndex);
                     if (position) {
-                      return language === "no"
-                        ? `${position.chapter}:${position.verse}`
-                        : `${position.chapter}:${position.verse}`;
+                      return `${position.chapter}:${position.verse}`;
                     }
 
-                    return language === "no"
-                      ? "Ukjent posisjon"
-                      : "Unknown position";
+                    return "Unknown position";
                   })()}
                 </p>
               </div>
@@ -477,12 +465,8 @@ export default function Ruth2Page() {
               {!followMode && (
                 <button
                   onClick={() => setFollowMode(true)}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${"bg-amber-500 text-white shadow-lg"}`}
-                  title={
-                    language === "no"
-                      ? "Slå på følgemodus"
-                      : "Turn on follow mode"
-                  }
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500 text-white shadow-lg transition-all duration-200"
+                  title="Turn on follow mode"
                 >
                   <svg
                     className="h-5 w-5"
