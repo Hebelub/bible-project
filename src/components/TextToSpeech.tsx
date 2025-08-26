@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from 'react'
 interface TextToSpeechProps {
   chapters: string[]
   startChapter: number
-  language: 'en' | 'no'
+  language: 'en' | 'no' | 'pl' | 'ne'
   className?: string
   onChapterChange?: (chapter: number) => void
   currentChapter: number

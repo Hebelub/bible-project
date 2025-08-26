@@ -40,7 +40,7 @@ export class TextParser {
       
       // Check for chapter marker: [chapter=n]
       const chapterMatch = trimmedLine.match(/^\[chapter=(\d+)\]/);
-      if (chapterMatch) {
+      if (chapterMatch && chapterMatch[1]) {
         currentChapter = parseInt(chapterMatch[1]);
         currentVerse = 0;
         
@@ -55,18 +55,18 @@ export class TextParser {
 
       // Check for verse marker: [n]
       const verseMatch = trimmedLine.match(/^\[(\d+)\]/);
-      if (verseMatch) {
+      if (verseMatch && verseMatch[1]) {
         currentVerse = parseInt(verseMatch[1]);
         const verseText = trimmedLine.substring(verseMatch[0].length).trim();
         
-        if (currentChapter > 0 && currentVerse > 0) {
+        if (currentChapter > 0 && currentVerse > 0 && result.chapters[currentChapter]) {
           result.chapters[currentChapter].verses[currentVerse] = verseText;
         }
         continue;
       }
 
       // If no marker, this might be continuation of previous verse
-      if (currentChapter > 0 && currentVerse > 0 && trimmedLine) {
+      if (currentChapter > 0 && currentVerse > 0 && trimmedLine && result.chapters[currentChapter]) {
         const existingVerse = result.chapters[currentChapter].verses[currentVerse];
         if (existingVerse) {
           result.chapters[currentChapter].verses[currentVerse] = existingVerse + ' ' + trimmedLine;

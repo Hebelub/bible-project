@@ -9,13 +9,13 @@ export class TextLoader {
       const response = await fetch(`/texts/${language}/${book}.txt`);
       
       if (!response.ok) {
-        throw new Error(`Failed to load text: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to load text for ${language}/${book}`);
       }
       
       const content = await response.text();
       return TextParser.parseText(content);
     } catch (error) {
-      console.error('Error loading text:', error);
+      console.error(`Error loading text for ${language}/${book}:`, error);
       throw error;
     }
   }
@@ -31,9 +31,7 @@ export class TextLoader {
    * Get available languages (based on folders in public/texts)
    */
   static getAvailableLanguages(): string[] {
-    // For now, hardcode the languages we know exist
-    // In the future, this could be dynamic based on available folders
-    return ['en', 'no'];
+    return ['en', 'no', 'pl', 'ne'];
   }
 
   /**

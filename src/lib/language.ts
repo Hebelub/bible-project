@@ -1,4 +1,4 @@
-export type Language = 'en' | 'no';
+export type Language = 'en' | 'no' | 'pl' | 'ne';
 
 export interface LanguageContextType {
   language: Language;

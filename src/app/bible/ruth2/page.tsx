@@ -110,7 +110,7 @@ export default function Ruth2Page() {
   const createAudioFromText = () => {
     const text = getAllText();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = language === "no" ? "nb-NO" : "en-US";
+    utterance.lang = language === "no" ? "nb-NO" : language === "pl" ? "pl-PL" : language === "ne" ? "ne-NP" : "en-US";
     utterance.rate = playbackRate;
     utterance.pitch = 1;
     utterance.volume = 1;
@@ -188,7 +188,7 @@ export default function Ruth2Page() {
       .join(" ");
 
     const utterance = new SpeechSynthesisUtterance(remainingText);
-    utterance.lang = language === "no" ? "nb-NO" : "en-US";
+    utterance.lang = language === "no" ? "nb-NO" : language === "pl" ? "pl-PL" : language === "ne" ? "ne-NP" : "en-US";
     utterance.rate = playbackRate;
     utterance.pitch = 1;
     utterance.volume = 1;
@@ -243,7 +243,7 @@ export default function Ruth2Page() {
         .join(" ");
 
       const utterance = new SpeechSynthesisUtterance(remainingText);
-      utterance.lang = language === "no" ? "nb-NO" : "en-US";
+      utterance.lang = language === "no" ? "nb-NO" : language === "pl" ? "pl-PL" : language === "ne" ? "ne-NP" : "en-US";
       utterance.rate = playbackRate;
       utterance.pitch = 1;
       utterance.volume = 1;
@@ -306,28 +306,40 @@ export default function Ruth2Page() {
             </div>
 
             {/* Language Buttons - Right Side */}
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setLanguage("en")}
-                className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
-                  language === "en"
-                    ? "bg-amber-500 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                EN ⋅ NIV
-              </button>
-              <button
-                onClick={() => setLanguage("no")}
-                className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
-                  language === "no"
-                    ? "bg-amber-500 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                NO ⋅ NB11
-              </button>
-            </div>
+                      <div className="flex space-x-2">
+            <button
+              onClick={() => setLanguage("en")}
+              className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
+                language === "en" ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              🇺🇸
+            </button>
+            <button
+              onClick={() => setLanguage("no")}
+              className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
+                language === "no" ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              🇳🇴
+            </button>
+            <button
+              onClick={() => setLanguage("pl")}
+              className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
+                language === "pl" ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              🇵🇱
+            </button>
+            <button
+              onClick={() => setLanguage("ne")}
+              className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
+                language === "ne" ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              🇳🇵
+            </button>
+          </div>
           </div>
         </div>
       </div>
