@@ -5,6 +5,7 @@ import { useLanguage } from "~/contexts/LanguageContext";
 import { TextLoader } from "~/lib/text-loader";
 import { TextParser, type ParsedText } from "~/lib/text-parser";
 import { RuthContext } from "~/components/RuthContext";
+import "flag-icons/css/flag-icons.min.css";
 
 export default function Ruth2Page() {
   const { language, setLanguage } = useLanguage();
@@ -28,7 +29,7 @@ export default function Ruth2Page() {
         const text = await TextLoader.loadRuthText(language);
         setRuthText(text);
       } catch (error) {
-        console.error('Failed to load text:', error);
+        console.error("Failed to load text:", error);
       } finally {
         setIsLoading(false);
       }
@@ -110,7 +111,14 @@ export default function Ruth2Page() {
   const createAudioFromText = () => {
     const text = getAllText();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = language === "no" ? "nb-NO" : language === "pl" ? "pl-PL" : language === "ne" ? "ne-NP" : "en-US";
+    utterance.lang =
+      language === "no"
+        ? "nb-NO"
+        : language === "pl"
+          ? "pl-PL"
+          : language === "ne"
+            ? "ne-NP"
+            : "en-US";
     utterance.rate = playbackRate;
     utterance.pitch = 1;
     utterance.volume = 1;
@@ -188,7 +196,14 @@ export default function Ruth2Page() {
       .join(" ");
 
     const utterance = new SpeechSynthesisUtterance(remainingText);
-    utterance.lang = language === "no" ? "nb-NO" : language === "pl" ? "pl-PL" : language === "ne" ? "ne-NP" : "en-US";
+    utterance.lang =
+      language === "no"
+        ? "nb-NO"
+        : language === "pl"
+          ? "pl-PL"
+          : language === "ne"
+            ? "ne-NP"
+            : "en-US";
     utterance.rate = playbackRate;
     utterance.pitch = 1;
     utterance.volume = 1;
@@ -243,7 +258,14 @@ export default function Ruth2Page() {
         .join(" ");
 
       const utterance = new SpeechSynthesisUtterance(remainingText);
-      utterance.lang = language === "no" ? "nb-NO" : language === "pl" ? "pl-PL" : language === "ne" ? "ne-NP" : "en-US";
+      utterance.lang =
+        language === "no"
+          ? "nb-NO"
+          : language === "pl"
+            ? "pl-PL"
+            : language === "ne"
+              ? "ne-NP"
+              : "en-US";
       utterance.rate = playbackRate;
       utterance.pitch = 1;
       utterance.volume = 1;
@@ -306,40 +328,40 @@ export default function Ruth2Page() {
             </div>
 
             {/* Language Buttons - Right Side */}
-                      <div className="flex space-x-2">
-            <button
-              onClick={() => setLanguage("en")}
-              className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
-                language === "en" ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              🇺🇸
-            </button>
-            <button
-              onClick={() => setLanguage("no")}
-              className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
-                language === "no" ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              🇳🇴
-            </button>
-            <button
-              onClick={() => setLanguage("pl")}
-              className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
-                language === "pl" ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              🇵🇱
-            </button>
-            <button
-              onClick={() => setLanguage("ne")}
-              className={`rounded px-2 py-1 text-xs font-medium transition-all duration-200 ${
-                language === "ne" ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              🇳🇵
-            </button>
-          </div>
+            <div className="flex space-x-2 rounded-lg border border-gray-200 bg-gray-100 pl-2">
+              <span
+                onClick={() => setLanguage("en")}
+                className={`fi fi-us cursor-pointer rounded-sm p-1 text-lg transition-all duration-300 hover:scale-125 hover:drop-shadow-lg ${
+                  language === "en"
+                    ? "text-amber-600 drop-shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              />
+              <span
+                onClick={() => setLanguage("no")}
+                className={`fi fi-no cursor-pointer rounded-sm p-1 text-lg transition-all duration-300 hover:scale-125 hover:drop-shadow-lg ${
+                  language === "no"
+                    ? "text-amber-600 drop-shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              />
+              <span
+                onClick={() => setLanguage("pl")}
+                className={`fi fi-pl cursor-pointer rounded-sm p-1 text-lg transition-all duration-300 hover:scale-125 hover:drop-shadow-lg ${
+                  language === "pl"
+                    ? "text-amber-600 drop-shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              />
+              <span
+                onClick={() => setLanguage("ne")}
+                className={`fi fi-np cursor-pointer rounded-sm p-1 text-lg transition-all duration-300 hover:scale-125 hover:drop-shadow-lg ${
+                  language === "ne"
+                    ? "text-amber-600 drop-shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -463,7 +485,10 @@ export default function Ruth2Page() {
                     }
 
                     // Use the new parser to find exact chapter and verse
-                    const position = TextParser.findChapterAndVerse(ruthText, currentWordIndex);
+                    const position = TextParser.findChapterAndVerse(
+                      ruthText,
+                      currentWordIndex,
+                    );
                     if (position) {
                       return `${position.chapter}:${position.verse}`;
                     }

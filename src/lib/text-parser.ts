@@ -59,7 +59,7 @@ export class TextParser {
         currentVerse = parseInt(verseMatch[1]);
         const verseText = trimmedLine.substring(verseMatch[0].length).trim();
         
-        if (currentChapter > 0 && currentVerse > 0 && result.chapters[currentChapter]) {
+        if (currentChapter > 0 && currentVerse > 0 && result.chapters[currentChapter] && result.chapters[currentChapter].verses) {
           result.chapters[currentChapter].verses[currentVerse] = verseText;
         }
         continue;
