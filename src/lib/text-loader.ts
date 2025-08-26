@@ -28,6 +28,13 @@ export class TextLoader {
   }
 
   /**
+   * Load Ruth2 text for a specific language
+   */
+  static async loadRuth2Text(language: string): Promise<ParsedText> {
+    return this.loadText(language, 'ruth2');
+  }
+
+  /**
    * Get available languages (based on folders in public/texts)
    */
   static getAvailableLanguages(): string[] {

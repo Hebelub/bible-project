@@ -1,14 +1,68 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLanguage } from '~/contexts/LanguageContext'
 import Link from 'next/link'
+import { ConceptLoader, type Concept, type ConceptTranslation } from '~/lib/concept-loader'
+import { isClient } from '~/lib/hydration'
 
 type TabType = 'map' | 'timeline' | 'people' | 'information'
 
-export function RuthContext() {
+interface RuthContextProps {
+  currentConceptId?: string | null;
+  onConceptChange?: (conceptId: string | null) => void;
+}
+
+export function RuthContext({ currentConceptId, onConceptChange }: RuthContextProps = {}) {
   const { language } = useLanguage()
   const [activeTab, setActiveTab] = useState<TabType>('information')
+  const [currentConcept, setCurrentConcept] = useState<(Concept & ConceptTranslation) | null>(null)
+  const [concepts, setConcepts] = useState<(Concept & ConceptTranslation)[]>([])
+
+  // Load concepts on mount and when language changes
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    const loadConcepts = async () => {
+      try {
+        const allConcepts = await ConceptLoader.getAllConceptsInLanguage(language)
+        setConcepts(allConcepts)
+      } catch (error) {
+        console.error('Failed to load concepts:', error)
+      }
+    }
+    void loadConcepts()
+  }, [language])
+
+  // Update current concept when currentConceptId changes
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    const updateCurrentConcept = async () => {
+      if (currentConceptId) {
+        try {
+          const concept = await ConceptLoader.getConceptInLanguage(currentConceptId, language)
+          setCurrentConcept(concept)
+        } catch (error) {
+          console.error('Failed to load concept:', error)
+          setCurrentConcept(null)
+        }
+      } else {
+        setCurrentConcept(null)
+      }
+    }
+    
+    void updateCurrentConcept()
+  }, [currentConceptId, language])
+
+  // Function to set current concept by ID
+  const setCurrentConceptById = (conceptId: string | null) => {
+    if (onConceptChange) {
+      onConceptChange(conceptId)
+    }
+  }
 
   const tabs = [
     { id: 'map' as const, label: 'Map', icon: '🗺️' },
@@ -164,45 +218,83 @@ export function RuthContext() {
       case 'information':
         return (
           <div className="p-8">
-            <h3 className="text-2xl font-serif font-bold text-amber-900 mb-6">
-              About the Book of Ruth
-            </h3>
-            <div className="space-y-6 text-gray-700">
-              <p className="text-lg leading-relaxed">
-                The Book of Ruth is a historical narrative set during the time of the Judges in Israel&apos;s history. It tells the story of a Moabite woman who becomes part of God's people and plays an important role in the Messiah's lineage.
-              </p>
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-                <h4 className="font-semibold text-blue-900 mb-3 text-lg">
-                  Main Themes
-                </h4>
-                <ul className="text-sm text-blue-800 space-y-2">
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                    Faithfulness and loyalty
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                    God's providence
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                    Redemption and restoration
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
-                    Inclusion of foreigners
-                  </li>
-                </ul>
+            {currentConcept ? (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-2xl font-serif font-bold text-amber-900">
+                    {currentConcept.title}
+                  </h3>
+                  <span className="px-3 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">
+                    {currentConcept.type}
+                  </span>
+                </div>
+                
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200">
+                  <h4 className="font-semibold text-amber-900 mb-3 text-lg">
+                    {currentConcept.name}
+                  </h4>
+                  <p className="text-gray-700 leading-relaxed">
+                    {currentConcept.description}
+                  </p>
+                </div>
+
+                {currentConcept.bibleverses.length > 0 && (
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                    <h4 className="font-semibold text-blue-900 mb-3 text-lg">
+                      Related Bible Verses
+                    </h4>
+                    <ul className="text-sm text-blue-800 space-y-2">
+                      {currentConcept.bibleverses.map((verse, index) => (
+                        <li key={index} className="flex items-center">
+                          <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                          {verse}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
-                <h4 className="font-semibold text-green-900 mb-3 text-lg">
-                  Historical Significance
-                </h4>
-                <p className="text-sm text-green-800 leading-relaxed">
-                  Ruth is one of four women mentioned in Matthew's genealogy of Jesus Christ.
+            ) : (
+              <div className="space-y-6 text-gray-700">
+                <h3 className="text-2xl font-serif font-bold text-amber-900 mb-6">
+                  About the Book of Ruth
+                </h3>
+                <p className="text-lg leading-relaxed">
+                  The Book of Ruth is a historical narrative set during the time of the Judges in Israel&apos;s history. It tells the story of a Moabite woman who becomes part of God&apos;s people and plays an important role in the Messiah&apos;s lineage.
                 </p>
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                  <h4 className="font-semibold text-blue-900 mb-3 text-lg">
+                    Main Themes
+                  </h4>
+                  <ul className="text-sm text-blue-800 space-y-2">
+                    <li className="flex items-center">
+                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                      Faithfulness and loyalty
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                      God&apos;s providence
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                      Redemption and restoration
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                      Inclusion of foreigners
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                  <h4 className="font-semibold text-green-900 mb-3 text-lg">
+                    Historical Significance
+                  </h4>
+                  <p className="text-sm text-green-800 leading-relaxed">
+                    Ruth is one of four women mentioned in Matthew&apos;s genealogy of Jesus Christ.
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )
 
@@ -213,29 +305,29 @@ export function RuthContext() {
 
   return (
     <div className="bg-white shadow-2xl border border-amber-200 overflow-hidden">
-      {/* Tab Navigation */}
-      <div className="flex border-b border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 ${
-              activeTab === tab.id
-                ? 'text-amber-700 border-b-2 border-amber-500 bg-white shadow-sm'
-                : 'text-amber-600 hover:text-amber-800 hover:bg-amber-100'
-            }`}
-          >
-            <div className="flex flex-col items-center space-y-2">
-              <span className="text-xl">{tab.icon}</span>
-              <span className="font-medium">{tab.label}</span>
-            </div>
-          </button>
-        ))}
-      </div>
+      <div className="flex">
+        {/* Tab Navigation - Left Side */}
+        <div className="flex flex-col border-r border-amber-200 bg-gradient-to-b from-amber-50 to-orange-50">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`w-12 h-12 flex items-center justify-center transition-all duration-200 ${
+                activeTab === tab.id
+                  ? 'text-amber-700 bg-white border-r-2 border-amber-500 shadow-sm'
+                  : 'text-amber-600 hover:text-amber-800 hover:bg-amber-100'
+              }`}
+              title={tab.label}
+            >
+              <span className="text-lg">{tab.icon}</span>
+            </button>
+          ))}
+        </div>
 
-      {/* Tab Content */}
-      <div className="max-h-[400px] overflow-y-auto">
-        {renderTabContent()}
+        {/* Tab Content */}
+        <div className="flex-1 max-h-[400px] overflow-y-auto">
+          {renderTabContent()}
+        </div>
       </div>
     </div>
   )

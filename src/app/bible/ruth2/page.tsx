@@ -5,6 +5,7 @@ import { useLanguage } from "~/contexts/LanguageContext";
 import { TextLoader } from "~/lib/text-loader";
 import { TextParser, type ParsedText } from "~/lib/text-parser";
 import { RuthContext } from "~/components/RuthContext";
+import { isClient } from "~/lib/hydration";
 import "flag-icons/css/flag-icons.min.css";
 
 export default function Ruth2Page() {
@@ -16,6 +17,7 @@ export default function Ruth2Page() {
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [followMode, setFollowMode] = useState(true);
+  const [currentConceptId, setCurrentConceptId] = useState<string | null>(null);
 
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const textContainerRef = useRef<HTMLDivElement>(null);
@@ -26,6 +28,9 @@ export default function Ruth2Page() {
 
   // Load all languages once on mount
   useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
     const loadAllLanguages = async () => {
       setIsLoading(true);
       try {
@@ -35,7 +40,7 @@ export default function Ruth2Page() {
         // Fetch all languages in parallel
         const promises = languages.map(async (lang) => {
           try {
-            const text = await TextLoader.loadRuthText(lang);
+            const text = await TextLoader.loadRuth2Text(lang);
             cache[lang] = text;
           } catch (error) {
             console.error(`Failed to load ${lang} text:`, error);
@@ -61,6 +66,9 @@ export default function Ruth2Page() {
 
   // Update current text when language changes (from cache)
   useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
     if (textCache[language]) {
       setRuthText(textCache[language]);
     }
@@ -68,13 +76,32 @@ export default function Ruth2Page() {
 
   // ✅ Always scroll when highlighted word changes if followMode is on
   useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
     if (followMode && currentWordIndex >= 0) {
       scrollToCurrentWord(currentWordIndex);
     }
   }, [currentWordIndex, followMode]);
 
+  // Update current concept when word index changes
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    if (currentWordIndex >= 0 && ruthText) {
+      const conceptId = TextParser.getCurrentInformationTag(ruthText, currentWordIndex);
+      setCurrentConceptId(conceptId);
+    } else {
+      setCurrentConceptId(null);
+    }
+  }, [currentWordIndex, ruthText]);
+
   // Auto-disable follow mode when user scrolls manually in text container
   useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
     const handleScroll = (event: Event) => {
       // Only disable follow mode if it's user-initiated scrolling, not programmatic
       if (
@@ -281,6 +308,9 @@ export default function Ruth2Page() {
 
   // Cleanup on unmount
   useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
     return () => {
       window.speechSynthesis.cancel();
     };
@@ -288,6 +318,9 @@ export default function Ruth2Page() {
 
   // Update playback rate
   useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
     if (window.speechSynthesis.speaking && isPlaying) {
       // Store current position before changing rate
       const currentPosition = currentWordIndex;
@@ -500,7 +533,10 @@ export default function Ruth2Page() {
           }`}
         >
           <div className="mx-auto max-w-6xl">
-            <RuthContext />
+            <RuthContext 
+              currentConceptId={currentConceptId}
+              onConceptChange={setCurrentConceptId}
+            />
           </div>
         </div>
 

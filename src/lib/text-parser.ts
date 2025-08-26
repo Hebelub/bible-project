@@ -4,7 +4,10 @@ export interface ParsedText {
     [chapterNumber: number]: {
       title: string;
       verses: {
-        [verseNumber: number]: string;
+        [verseNumber: number]: {
+          text: string;
+          informationTag?: string;
+        };
       };
     };
   };
@@ -34,15 +37,24 @@ export class TextParser {
 
     let currentChapter = 0;
     let currentVerse = 0;
+    let currentInformationTag: string | undefined;
 
     for (const line of lines) {
       const trimmedLine = line.trim();
       
+      // Check for information tag: [I=Concept]
+      const infoMatch = trimmedLine.match(/^\[I=([^\]]+)\]/);
+      if (infoMatch?.[1]) {
+        currentInformationTag = infoMatch[1];
+        continue;
+      }
+      
       // Check for chapter marker: [chapter=n]
       const chapterMatch = trimmedLine.match(/^\[chapter=(\d+)\]/);
-      if (chapterMatch && chapterMatch[1]) {
+      if (chapterMatch?.[1]) {
         currentChapter = parseInt(chapterMatch[1]);
         currentVerse = 0;
+        currentInformationTag = undefined;
         
         if (!result.chapters[currentChapter]) {
           result.chapters[currentChapter] = {
@@ -55,21 +67,24 @@ export class TextParser {
 
       // Check for verse marker: [n]
       const verseMatch = trimmedLine.match(/^\[(\d+)\]/);
-      if (verseMatch && verseMatch[1]) {
+      if (verseMatch?.[1]) {
         currentVerse = parseInt(verseMatch[1]);
         const verseText = trimmedLine.substring(verseMatch[0].length).trim();
         
-        if (currentChapter > 0 && currentVerse > 0 && result.chapters[currentChapter] && result.chapters[currentChapter].verses) {
-          result.chapters[currentChapter].verses[currentVerse] = verseText;
+        if (currentChapter > 0 && currentVerse > 0 && result.chapters[currentChapter]?.verses) {
+          result.chapters[currentChapter].verses[currentVerse] = {
+            text: verseText,
+            informationTag: currentInformationTag
+          };
         }
         continue;
       }
 
       // If no marker, this might be continuation of previous verse
-      if (currentChapter > 0 && currentVerse > 0 && trimmedLine && result.chapters[currentChapter]) {
+      if (currentChapter > 0 && currentVerse > 0 && trimmedLine && result.chapters[currentChapter]?.verses) {
         const existingVerse = result.chapters[currentChapter].verses[currentVerse];
         if (existingVerse) {
-          result.chapters[currentChapter].verses[currentVerse] = existingVerse + ' ' + trimmedLine;
+          existingVerse.text += ' ' + trimmedLine;
         }
       }
     }
@@ -87,7 +102,10 @@ export class TextParser {
       const chapter = parsedText.chapters[chapterNum];
       
       for (const verseNum of Object.keys(chapter.verses).map(Number).sort((a, b) => a - b)) {
-        fullText += chapter.verses[verseNum] + ' ';
+        const verse = chapter.verses[verseNum];
+        if (verse) {
+          fullText += verse.text + ' ';
+        }
       }
       fullText += '\n\n';
     }
@@ -115,32 +133,34 @@ export class TextParser {
       const chapter = parsedText.chapters[chapterNum];
       
       for (const verseNum of Object.keys(chapter.verses).map(Number).sort((a, b) => a - b)) {
-        const verseText = chapter.verses[verseNum];
-        const verseWords = verseText.split(/(\s+)/);
-        
-        for (let i = 0; i < verseWords.length; i++) {
-          const word = verseWords[i];
-          const isSpace = /^\s+$/.test(word);
+        const verse = chapter.verses[verseNum];
+        if (verse) {
+          const verseWords = verse.text.split(/(\s+)/);
           
-          if (!isSpace) {
-            words.push({
-              word,
-              index: wordIndex,
-              isSpace: false,
-              chapter: chapterNum,
-              verse: verseNum,
-              wordInVerse: Math.floor(i / 2) + 1
-            });
-            wordIndex++;
-          } else {
-            words.push({
-              word,
-              index: -1, // Spaces don't count for word index
-              isSpace: true,
-              chapter: chapterNum,
-              verse: verseNum,
-              wordInVerse: -1
-            });
+          for (let i = 0; i < verseWords.length; i++) {
+            const word = verseWords[i];
+            const isSpace = /^\s+$/.test(word);
+            
+            if (!isSpace) {
+              words.push({
+                word,
+                index: wordIndex,
+                isSpace: false,
+                chapter: chapterNum,
+                verse: verseNum,
+                wordInVerse: Math.floor(i / 2) + 1
+              });
+              wordIndex++;
+            } else {
+              words.push({
+                word,
+                index: -1, // Spaces don't count for word index
+                isSpace: true,
+                chapter: chapterNum,
+                verse: verseNum,
+                wordInVerse: -1
+              });
+            }
           }
         }
       }
@@ -161,6 +181,23 @@ export class TextParser {
         chapter: word.chapter,
         verse: word.verse
       };
+    }
+    
+    return null;
+  }
+
+  /**
+   * Get the current information tag for a given word index
+   */
+  static getCurrentInformationTag(parsedText: ParsedText, wordIndex: number): string | null {
+    const words = this.getWordsWithPositions(parsedText);
+    const word = words.find(w => w.index === wordIndex && !w.isSpace);
+    
+    if (word) {
+      const chapter = parsedText.chapters[word.chapter];
+      if (chapter?.verses[word.verse]?.informationTag) {
+        return chapter.verses[word.verse].informationTag;
+      }
     }
     
     return null;
