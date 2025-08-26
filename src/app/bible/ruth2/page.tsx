@@ -21,22 +21,50 @@ export default function Ruth2Page() {
   const textContainerRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScrollRef = useRef(false);
 
-  // Load text when language changes
+  // Cache for all language texts
+  const [textCache, setTextCache] = useState<Record<string, ParsedText>>({});
+
+  // Load all languages once on mount
   useEffect(() => {
-    const loadText = async () => {
+    const loadAllLanguages = async () => {
       setIsLoading(true);
       try {
-        const text = await TextLoader.loadRuthText(language);
-        setRuthText(text);
+        const languages = ['en', 'no', 'pl', 'ne'];
+        const cache: Record<string, ParsedText> = {};
+        
+        // Fetch all languages in parallel
+        const promises = languages.map(async (lang) => {
+          try {
+            const text = await TextLoader.loadRuthText(lang);
+            cache[lang] = text;
+          } catch (error) {
+            console.error(`Failed to load ${lang} text:`, error);
+          }
+        });
+        
+        await Promise.all(promises);
+        setTextCache(cache);
+        
+        // Set current language text
+        if (cache[language]) {
+          setRuthText(cache[language]);
+        }
       } catch (error) {
-        console.error("Failed to load text:", error);
+        console.error("Failed to load texts:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    void loadText();
-  }, [language]);
+    void loadAllLanguages();
+  }, []); // Only run once on mount
+
+  // Update current text when language changes (from cache)
+  useEffect(() => {
+    if (textCache[language]) {
+      setRuthText(textCache[language]);
+    }
+  }, [language, textCache]);
 
   // ✅ Always scroll when highlighted word changes if followMode is on
   useEffect(() => {
@@ -109,8 +137,8 @@ export default function Ruth2Page() {
 
   // Function to create audio from text
   const createAudioFromText = () => {
-    const text = getAllText();
-    const utterance = new SpeechSynthesisUtterance(text);
+    const cleanText = TextParser.getCleanTextForTTS(ruthText!);
+    const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang =
       language === "no"
         ? "nb-NO"
@@ -147,6 +175,20 @@ export default function Ruth2Page() {
     };
 
     return utterance;
+  };
+
+  // Function to get book title in the selected language
+  const getBookTitle = () => {
+    switch (language) {
+      case "no":
+        return "Ruts bok";
+      case "pl":
+        return "Księga Rut";
+      case "ne":
+        return "रूथको पुस्तक";
+      default:
+        return "Book of Ruth";
+    }
   };
 
   // Play/pause functionality
@@ -195,7 +237,10 @@ export default function Ruth2Page() {
       .map((w) => w.word)
       .join(" ");
 
-    const utterance = new SpeechSynthesisUtterance(remainingText);
+    // Remove all square bracket content like [chapter=1], [1], etc.
+    const cleanRemainingText = remainingText.replace(/\[.*?\]/g, "").trim();
+
+    const utterance = new SpeechSynthesisUtterance(cleanRemainingText);
     utterance.lang =
       language === "no"
         ? "nb-NO"
@@ -320,11 +365,11 @@ export default function Ruth2Page() {
             {/* Book Title - Left Side */}
             <div className="flex items-center space-x-3">
               <div className="h-8 w-2 rounded-full bg-gradient-to-b from-amber-500 to-orange-500"></div>
-              <div>
-                <h2 className="text-lg font-semibold text-amber-900">
-                  {ruthText.title}
-                </h2>
-              </div>
+                             <div>
+                 <h2 className="text-lg font-semibold text-amber-900">
+                   {getBookTitle()}
+                 </h2>
+               </div>
             </div>
 
             {/* Language Buttons - Right Side */}

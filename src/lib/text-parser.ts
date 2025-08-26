@@ -85,7 +85,6 @@ export class TextParser {
     
     for (const chapterNum of Object.keys(parsedText.chapters).map(Number).sort((a, b) => a - b)) {
       const chapter = parsedText.chapters[chapterNum];
-      fullText += chapter.title + '\n\n';
       
       for (const verseNum of Object.keys(chapter.verses).map(Number).sort((a, b) => a - b)) {
         fullText += chapter.verses[verseNum] + ' ';
@@ -94,6 +93,15 @@ export class TextParser {
     }
     
     return fullText.trim();
+  }
+
+  /**
+   * Get clean text for TTS with all square bracket content removed
+   */
+  static getCleanTextForTTS(parsedText: ParsedText): string {
+    const fullText = this.getAllText(parsedText);
+    // Remove all square bracket content like [chapter=1], [1], etc.
+    return fullText.replace(/\[.*?\]/g, '').trim();
   }
 
   /**
