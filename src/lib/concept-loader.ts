@@ -17,7 +17,7 @@ export interface Concept {
 }
 
 export interface ConceptsData {
-  concepts: Concept[];
+  concepts: Record<string, Concept>;
 }
 
 export class ConceptLoader {
@@ -48,19 +48,19 @@ export class ConceptLoader {
   }
 
   /**
-   * Get a specific concept by ID
+   * Get a specific concept by ID - O(1) lookup
    */
   static async getConcept(id: string): Promise<Concept | null> {
     const data = await this.loadConcepts();
-    return data.concepts.find(concept => concept.id === id) ?? null;
+    return data.concepts[id] ?? null;
   }
 
   /**
-   * Get all concepts
+   * Get all concepts as an array
    */
   static async getAllConcepts(): Promise<Concept[]> {
     const data = await this.loadConcepts();
-    return data.concepts;
+    return Object.values(data.concepts);
   }
 
   /**
@@ -83,8 +83,8 @@ export class ConceptLoader {
    * Get all concepts in a specific language
    */
   static async getAllConceptsInLanguage(language: string): Promise<(Concept & ConceptTranslation)[]> {
-    const concepts = await this.getAllConcepts();
-    return concepts.map(concept => {
+    const data = await this.loadConcepts();
+    return Object.values(data.concepts).map(concept => {
       const translation = concept.translations[language as keyof typeof concept.translations];
       if (!translation) {
         // Fallback to English if translation not available
@@ -98,5 +98,21 @@ export class ConceptLoader {
         ...translation
       };
     });
+  }
+
+  /**
+   * Check if a concept exists by ID - O(1) lookup
+   */
+  static async conceptExists(id: string): Promise<boolean> {
+    const data = await this.loadConcepts();
+    return id in data.concepts;
+  }
+
+  /**
+   * Get concept IDs - useful for validation
+   */
+  static async getConceptIds(): Promise<string[]> {
+    const data = await this.loadConcepts();
+    return Object.keys(data.concepts);
   }
 }

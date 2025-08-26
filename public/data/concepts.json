@@ -1,74 +1,63 @@
 {
-  "concepts": [
-    {
+  "concepts": {
+    "Loyalty": {
       "id": "Loyalty",
       "type": "Key to understanding",
-      "bibleverses": [
-        "Ruth 1:16-17",
-        "Ruth 2:11-12",
-        "Ruth 3:10"
-      ],
+      "bibleverses": ["Ruth 1:16-17", "Ruth 2:11-12", "Ruth 3:10"],
       "translations": {
         "en": {
           "title": "Loyalty",
           "name": "Why do they go to Moab",
-          "description": "Loyalty (Hebrew: hesed) is a central theme in the Book of Ruth. It refers to steadfast love, faithfulness, and commitment that goes beyond mere obligation. Ruth's loyalty to Naomi demonstrates this concept beautifully - she chooses to stay with her mother-in-law even when it would be easier to return to her own people. This loyalty is not just emotional attachment, but a deep commitment to care for and support another person, even at great personal cost."
+          "description": "Loyalty (Hebrew: חֶסֶד, hesed) is a central theme in the Book of Ruth. It refers to steadfast love, faithfulness, and commitment that goes beyond mere obligation. Ruth's loyalty to Naomi demonstrates this concept beautifully - she chooses to stay with her mother-in-law even when it would be easier to return to her own people. This loyalty is not just emotional attachment, but a deep commitment to care for and support another person, even at great personal cost."
         },
         "no": {
           "title": "Lojalitet",
           "name": "Hvorfor drar de til Moab",
-          "description": "Lojalitet (hebraisk: hesed) er et sentralt tema i Ruts bok. Det refererer til standhaftig kjærlighet, trofasthet og engasjement som går utover bare forpliktelse. Ruts lojalitet mot Noomi demonstrerer dette konseptet vakkert - hun velger å bli hos sin svigermor selv når det ville være enklere å vende tilbake til sitt eget folk. Denne lojaliteten er ikke bare følelsesmessig tilknytning, men et dypt engasjement for å ta vare på og støtte en annen person, selv til stor personlig kostnad."
+          "description": "Lojalitet (hebraisk: חֶסֶד, hesed) er et sentralt tema i Ruts bok. Det refererer til standhaftig kjærlighet, trofasthet og engasjement som går utover bare forpliktelse. Ruts lojalitet mot Noomi demonstrerer dette konseptet vakkert - hun velger å bli hos sin svigermor selv når det ville være enklere å vende tilbake til sitt eget folk. Denne lojaliteten er ikke bare følelsesmessig tilknytning, men et dypt engasjement for å ta vare på og støtte en annen person, selv til stor personlig kostnad."
         },
         "pl": {
           "title": "Lojalność",
           "name": "Dlaczego idą do Moabu",
-          "description": "Lojalność (hebrajski: hesed) jest centralnym tematem Księgi Rut. Odnosi się do niezachwianej miłości, wierności i zaangażowania, które wykraczają poza zwykły obowiązek. Lojalność Rut wobec Noemi pięknie demonstruje to pojęcie - wybiera ona pozostanie z teściową, nawet gdy łatwiej byłoby wrócić do swojego ludu. Ta lojalność to nie tylko emocjonalne przywiązanie, ale głębokie zaangażowanie w opiekę i wsparcie drugiej osoby, nawet za wielką osobistą cenę."
+          "description": "Lojalność (hebrajski: חֶסֶד, hesed) jest centralnym tematem Księgi Rut. Odnosi się do niezachwianej miłości, wierności i zaangażowania, które wykraczają poza zwykły obowiązek. Lojalność Rut wobec Noemi pięknie demonstruje to pojęcie - wybiera ona pozostanie z teściową, nawet gdy łatwiej byłoby wrócić do swojego ludu. Ta lojalność to nie tylko emocjonalne przywiązanie, ale głębokie zaangażowanie w opiekę i wsparcie drugiej osoby, nawet za wielką osobistą cenę."
         },
         "ne": {
           "title": "वफादारी",
           "name": "किन तिनीहरू मोआब जान्छन्",
-          "description": "वफादारी (हिब्रू: hesed) रूथको पुस्तकको एक केन्द्रीय विषय हो। यसले दृढ प्रेम, विश्वसनीयता र त्यागलाई बुझाउँछ जुन मात्र कर्तव्यभन्दा पनि बढी छ। रूथको नाओमीप्रतिको वफादारीले यो अवधारणालाई सुन्दर रूपमा देखाउँछ - उनी आफ्नी सासूसँग बस्ने छान्छिन् जबकि आफ्ना जनतासम्म फर्कनु धेरै सजिलो हुन्थ्यो। यो वफादारी मात्र भावनात्मक लगाव होइन, तर अर्को व्यक्तिको हेरचाह र सहयोग गर्ने गहिरो प्रतिबद्धता हो, यहाँसम्म कि ठूलो व्यक्तिगत लागतमा पनि।"
+          "description": "वफादारी (हिब्रू: חֶסֶד, hesed) रूथको पुस्तकको एक केन्द्रीय विषय हो। यसले दृढ प्रेम, विश्वसनीयता र त्यागलाई बुझाउँछ जुन मात्र कर्तव्यभन्दा पनि बढी छ। रूथको नाओमीप्रतिको वफादारीले यो अवधारणालाई सुन्दर रूपमा देखाउँछ - उनी आफ्नी सासूसँग बस्ने छान्छिन् जबकि उनका जनतासम्म फर्कनु धेरै सजिलो हुन्थ्यो। यो वफादारी मात्र भावनात्मक लगाव होइन, तर अर्को व्यक्तिको हेरचाह र सहयोग गर्ने गहिरो प्रतिबद्धता हो, यहाँसम्म कि ठूलो व्यक्तिगत लागतमा पनि।"
         }
       }
     },
-    {
+    "Redemption": {
       "id": "Redemption",
       "type": "Concept",
-      "bibleverses": [
-        "Ruth 2:20",
-        "Ruth 3:9",
-        "Ruth 4:1-10"
-      ],
+      "bibleverses": ["Ruth 2:20", "Ruth 3:9", "Ruth 4:1-10"],
       "translations": {
         "en": {
           "title": "Redemption",
           "name": "The Kinsman-Redeemer",
-          "description": "Redemption in the Book of Ruth refers to the practice of the kinsman-redeemer (Hebrew: go'el), a close relative who had the responsibility to redeem family property, marry widows, and continue the family line. Boaz acts as Ruth's kinsman-redeemer, not only providing for her materially but also ensuring that her deceased husband's name continues through their marriage. This concept points forward to Christ as our ultimate Redeemer."
+          "description": "Redemption in the Book of Ruth refers to the practice of the kinsman-redeemer (Hebrew: גּוֹאֵל, go'el), a close relative who had the responsibility to redeem family property, marry widows, and continue the family line. Boaz acts as Ruth's kinsman-redeemer, not only providing for her materially but also ensuring that her deceased husband's name continues through their marriage. This concept points forward to Christ as our ultimate Redeemer."
         },
         "no": {
           "title": "Frelse",
           "name": "Løsningsmannen",
-          "description": "Frelse i Ruts bok refererer til praksisen med løsningsmannen (hebraisk: go'el), en nær slektning som hadde ansvaret for å løse familiens eiendom, gifte seg med enker og fortsette familiens linje. Boas handler som Ruts løsningsmann, ikke bare ved å sørge for henne materielt, men også ved å sikre at hennes avdøde manns navn fortsetter gjennom deres ekteskap. Dette konseptet peker fremover mot Kristus som vår ultimate frelser."
+          "description": "Frelse i Ruts bok refererer til praksisen med løsningsmannen (hebraisk: גּוֹאֵל, go'el), en nær slektning som hadde ansvaret for å løse familiens eiendom, gifte seg med enker og fortsette familiens linje. Boas handler som Ruts løsningsmann, ikke bare ved å sørge for henne materielt, men også ved å sikre at hennes avdøde manns navn fortsetter gjennom deres ekteskap. Dette konseptet peker fremover mot Kristus som vår ultimate frelser."
         },
         "pl": {
           "title": "Wykupienie",
           "name": "Odkupiciel krewny",
-          "description": "Wykupienie w Księdze Rut odnosi się do praktyki odkupiciela krewniaka (hebrajski: go'el), bliskiego krewnego, który miał odpowiedzialność wykupienia rodzinnej własności, poślubienia wdów i kontynuowania linii rodzinnej. Boaz działa jako odkupiciel Rut, nie tylko zapewniając jej materialnie, ale także zapewniając, że imię jej zmarłego męża trwa przez ich małżeństwo. To pojęcie wskazuje na Chrystusa jako naszego ostatecznego Odkupiciela."
+          "description": "Wykupienie w Księdze Rut odnosi się do praktyki odkupiciela krewniaka (hebrajski: גּוֹאֵל, go'el), bliskiego krewnego, który miał odpowiedzialność wykupienia rodzinnej własności, poślubienia wdów i kontynuowania linii rodzinnej. Boaz działa jako odkupiciel Rut, nie tylko zapewniając jej materialnie, ale także zapewniając, że imię jej zmarłego męża trwa przez ich małżeństwo. To pojęcie wskazuje na Chrystusa jako naszego ostatecznego Odkupiciela."
         },
         "ne": {
           "title": "छुटकारा",
           "name": "नातेदार-छुटकारा दिने",
-          "description": "रूथको पुस्तकमा छुटकाराले नातेदार-छुटकारा दिने (हिब्रू: go'el) को अभ्यासलाई बुझाउँछ, एक नजिकै नातेदार जसको परिवारको सम्पत्ति छुटकारा गर्ने, विधवाहरूलाई बिहे गर्ने र परिवारको लिनेलाई जारी राख्ने जिम्मेवारी थियो। बोअज रूथको नातेदार-छुटकारा दिनेको रूपमा काम गर्छन्, न केवल उनलाई भौतिक रूपमा सहयोग गर्दै तर यो पनि सुनिश्चित गर्दै कि उनको मरेका पतिको नाम तिनीहरूको विवाह मार्फत जारी रहन्छ। यो अवधारणा हाम्रो अन्तिम छुटकारा दिनेको रूपमा मसीहतिर इङ्गित गर्छ।"
+          "description": "रूथको पुस्तकमा छुटकाराले नातेदार-छुटकारा दिने (हिब्रू: גּוֹאֵל, go'el) को अभ्यासलाई बुझाउँछ, एक नजिकै नातेदार जसको परिवारको सम्पत्ति छुटकारा गर्ने, विधवाहरूलाई बिहे गर्ने र परिवारको लिनेलाई जारी राख्ने जिम्मेवारी थियो। बोअज रूथको नातेदार-छुटकारा दिनेको रूपमा काम गर्छन्, न केवल उनलाई भौतिक रूपमा सहयोग गर्दै तर यो पनि सुनिश्चित गर्दै कि उनको मरेका पतिको नाम तिनीहरूको विवाह मार्फत जारी रहन्छ। यो अवधारणा हाम्रो अन्तिम छुटकारा दिनेको रूपमा मसीहतिर इङ्गित गर्छ।"
         }
       }
     },
-    {
+    "Providence": {
       "id": "Providence",
       "type": "Key to understanding",
-      "bibleverses": [
-        "Ruth 2:3",
-        "Ruth 4:13-17"
-      ],
+      "bibleverses": ["Ruth 2:3", "Ruth 4:13-17"],
       "translations": {
         "en": {
           "title": "God's Providence",
@@ -92,7 +81,7 @@
         }
       }
     },
-    {
+    "Gleaning": {
       "id": "Gleaning",
       "type": "Word study",
       "bibleverses": [
@@ -104,24 +93,24 @@
         "en": {
           "title": "Gleaning",
           "name": "The Law of Gleaning",
-          "description": "Gleaning was a provision in Israelite law that allowed the poor and foreigners to gather leftover grain from harvested fields. This practice demonstrated God's care for the vulnerable and provided a way for them to work for their food rather than simply receiving charity. Ruth's gleaning in Boaz's field not only provided for her and Naomi's immediate needs but also led to her meeting Boaz."
+          "description": "Gleaning was a provision in Israelite law that allowed the poor and foreigners to gather leftover grain from harvested fields (Hebrew: לֶקֶט, leqet). This practice demonstrated God's care for the vulnerable and provided a way for them to work for their food rather than simply receiving charity. Ruth's gleaning in Boaz's field not only provided for her and Naomi's immediate needs but also led to her meeting Boaz."
         },
         "no": {
           "title": "Aksplukking",
           "name": "Loven om aksplukking",
-          "description": "Aksplukking var en bestemmelse i israelsk lov som tillot fattige og fremmede å samle rester av korn fra innhøstede marker. Denne praksisen demonstrerte Guds omsorg for de sårbare og ga dem en måte å arbeide for maten sin på i stedet for bare å motta veldedighet. Ruts aksplukking i Boas' mark sørget ikke bare for hennes og Noomis umiddelbare behov, men førte også til at hun møtte Boas."
+          "description": "Aksplukking var en bestemmelse i israelsk lov som tillot fattige og fremmede å samle rester av korn fra innhøstede marker (hebraisk: לֶקֶט, leqet). Denne praksisen demonstrerte Guds omsorg for de sårbare og ga dem en måte å arbeide for maten sin på i stedet for bare å motta veldedighet. Ruts aksplukking i Boas' mark sørget ikke bare for hennes og Noomis umiddelbare behov, men førte også til at hun møtte Boas."
         },
         "pl": {
           "title": "Zbieranie kłosów",
           "name": "Prawo zbierania kłosów",
-          "description": "Zbieranie kłosów było przepisem w prawie izraelskim, który pozwalał ubogim i cudzoziemcom zbierać resztki ziarna z zebranych pól. Ta praktyka demonstrowała Bożą troskę o bezbronnych i zapewniała im sposób na pracę dla pożywienia, zamiast po prostu otrzymywania jałmużny. Zbieranie kłosów przez Rut na polu Boaza nie tylko zapewniało jej i Noemi natychmiastowe potrzeby, ale także doprowadziło do jej spotkania z Boazem."
+          "description": "Zbieranie kłosów było przepisem w prawie izraelskim, który pozwalał ubogim i cudzoziemcom zbierać resztki ziarna z zebranych pól (hebrajski: לֶקֶט, leqet). Ta praktyka demonstrowała Bożą troskę o bezbronnych i zapewniała im sposób na pracę dla pożywienia, zamiast po prostu otrzymywania jałmużny. Zbieranie kłosów przez Rut na polu Boaza nie tylko zapewniało jej i Noemi natychmiastowe potrzeby, ale także doprowadziło do jej spotkania z Boazem."
         },
         "ne": {
           "title": "अन्न बटुल्ने",
           "name": "अन्न बटुल्नेको कानून",
-          "description": "अन्न बटुल्ने इजरायली कानूनमा एक व्यवस्था थियो जसले गरीब र विदेशीहरूलाई काटिएका खेतहरूबाट बाँकी अन्न जम्मा गर्न अनुमति दिन्थ्यो। यो अभ्यासले कमजोरहरूप्रतिको परमेश्वरको हेरचाह देखाउँथ्यो र तिनीहरूलाई मात्र दान पाउनुको साटो आफ्नो खानाको लागि काम गर्ने तरिका प्रदान गर्थ्यो। बोअजको खेतमा रूथको अन्न बटुल्नेले न केवल उनको र नाओमीको तत्काल आवश्यकताहरू पूरा गर्यो तर उनको बोअजसँग भेटमा पनि नेतृत्व गर्यो।"
+          "description": "अन्न बटुल्ने इजरायली कानूनमा एक व्यवस्था थियो जसले गरीब र विदेशीहरूलाई काटिएका खेतहरूबाट बाँकी अन्न जम्मा गर्न अनुमति दिन्थ्यो (हिब्रू: לֶקֶט, leqet)। यो अभ्यासले कमजोरहरूप्रति परमेश्वरको हेरचाह देखाउँथ्यो र तिनीहरूलाई मात्र दान पाउनुको साटो आफ्नो खानाको लागि काम गर्ने तरिका प्रदान गर्थ्यो। बोअजको खेतमा रूथको अन्न बटुल्नेले न केवल उनको र नाओमीको तत्काल आवश्यकताहरू पूरा गर्यो तर उनको बोअजसँग भेटमा पनि नेतृत्व गर्यो।"
         }
       }
     }
-  ]
+  }
 }
