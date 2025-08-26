@@ -1,0 +1,653 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { useLanguage } from "~/contexts/LanguageContext";
+import { TextLoader } from "~/lib/text-loader";
+import { TextParser, type ParsedText } from "~/lib/text-parser";
+import { RuthContext } from "~/components/RuthContext";
+import { isClient } from "~/lib/hydration";
+import "flag-icons/css/flag-icons.min.css";
+
+export default function Ruth2Page() {
+  const { language, setLanguage } = useLanguage();
+  const [ruthText, setRuthText] = useState<ParsedText | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isContextOpen, setIsContextOpen] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(-1);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [followMode, setFollowMode] = useState(true);
+  const [currentConceptId, setCurrentConceptId] = useState<string | null>(null);
+
+  const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const isProgrammaticScrollRef = useRef(false);
+
+  // Cache for all language texts
+  const [textCache, setTextCache] = useState<Record<string, ParsedText>>({});
+
+  // Load all languages once on mount
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    const loadAllLanguages = async () => {
+      setIsLoading(true);
+      try {
+        const languages = ['en', 'no', 'pl', 'ne'];
+        const cache: Record<string, ParsedText> = {};
+        
+        // Fetch all languages in parallel
+        const promises = languages.map(async (lang) => {
+          try {
+            const text = await TextLoader.loadRuth2Text(lang);
+            cache[lang] = text;
+          } catch (error) {
+            console.error(`Failed to load ${lang} text:`, error);
+          }
+        });
+        
+        await Promise.all(promises);
+        setTextCache(cache);
+        
+        // Set current language text
+        if (cache[language]) {
+          setRuthText(cache[language]);
+        }
+      } catch (error) {
+        console.error("Failed to load texts:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadAllLanguages();
+  }, []); // Only run once on mount
+
+  // Update current text when language changes (from cache)
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    if (textCache[language]) {
+      setRuthText(textCache[language]);
+    }
+  }, [language, textCache]);
+
+  // ✅ Always scroll when highlighted word changes if followMode is on
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    if (followMode && currentWordIndex >= 0) {
+      scrollToCurrentWord(currentWordIndex);
+    }
+  }, [currentWordIndex, followMode]);
+
+  // Update current concept when word index changes
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    if (currentWordIndex >= 0 && ruthText) {
+      const conceptId = TextParser.getCurrentInformationTag(ruthText, currentWordIndex);
+      setCurrentConceptId(conceptId);
+    } else {
+      setCurrentConceptId(null);
+    }
+  }, [currentWordIndex, ruthText]);
+
+  // Auto-disable follow mode when user scrolls manually in text container
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    const handleScroll = (event: Event) => {
+      // Only disable follow mode if it's user-initiated scrolling, not programmatic
+      if (
+        followMode &&
+        event.target === textContainerRef.current &&
+        !isProgrammaticScrollRef.current
+      ) {
+        setFollowMode(false);
+      }
+    };
+
+    // Add scroll listener only to the text container, not the window
+    const textContainer = textContainerRef.current;
+    if (textContainer) {
+      textContainer.addEventListener("scroll", handleScroll, { passive: true });
+      return () => textContainer.removeEventListener("scroll", handleScroll);
+    }
+  }, [followMode]);
+
+  // Function to scroll to current word if follow mode is on
+  const scrollToCurrentWord = (wordIndex: number) => {
+    const wordElement = wordRefs.current[wordIndex];
+    if (wordElement) {
+      // Get the text container's scrollable area
+      const textContainer = textContainerRef.current;
+      if (textContainer) {
+        // Mark this as programmatic scrolling to prevent follow mode from being disabled
+        isProgrammaticScrollRef.current = true;
+
+        // Calculate the word's position relative to the text container
+        const wordTop = wordElement.offsetTop;
+        const containerHeight = textContainer.clientHeight;
+        const scrollTop = wordTop - containerHeight / 2;
+
+        // Scroll the text container, not the window
+        textContainer.scrollTo({
+          top: scrollTop,
+          behavior: "smooth",
+        });
+
+        // Reset the flag after scrolling completes
+        setTimeout(() => {
+          isProgrammaticScrollRef.current = false;
+        }, 300); // ~duration of smooth scroll
+      }
+    }
+  };
+
+  // Function to get all text as one continuous string
+  const getAllText = () => {
+    if (!ruthText) return "";
+    return TextParser.getAllText(ruthText);
+  };
+
+  // Function to split text into words with positions
+  const getWordsWithPositions = () => {
+    if (!ruthText) return [];
+    return TextParser.getWordsWithPositions(ruthText);
+  };
+
+  // Function to create audio from text
+  const createAudioFromText = () => {
+    const cleanText = TextParser.getCleanTextForTTS(ruthText!);
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang =
+      language === "no"
+        ? "nb-NO"
+        : language === "pl"
+          ? "pl-PL"
+          : language === "ne"
+            ? "ne-NP"
+            : "en-US";
+    utterance.rate = playbackRate;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    // Track word timing (approximate)
+    let wordIndex = 0;
+
+    utterance.onboundary = (event) => {
+      if (event.name === "word") {
+        setCurrentWordIndex(wordIndex);
+        wordIndex++;
+      }
+    };
+
+    utterance.onend = () => {
+      setIsPlaying(false);
+      setCurrentWordIndex(-1);
+    };
+
+    utterance.onpause = () => {
+      setIsPlaying(false);
+    };
+
+    utterance.onresume = () => {
+      setIsPlaying(true);
+    };
+
+    return utterance;
+  };
+
+  // Function to get book title in the selected language
+  const getBookTitle = () => {
+    switch (language) {
+      case "no":
+        return "Ruts bok";
+      case "pl":
+        return "Księga Rut";
+      case "ne":
+        return "रूथको पुस्तक";
+      default:
+        return "Book of Ruth";
+    }
+  };
+
+  // Play/pause functionality
+  const togglePlayback = () => {
+    if (isPlaying) {
+      window.speechSynthesis.pause();
+      setIsPlaying(false);
+    } else {
+      if (window.speechSynthesis.speaking) {
+        // Resume from current marked position, not from where it was paused
+        stopPlayback();
+        if (currentWordIndex >= 0) {
+          playFromWord(currentWordIndex);
+        } else {
+          const utterance = createAudioFromText();
+          window.speechSynthesis.speak(utterance);
+        }
+      } else {
+        // If we have a marked position, start from there, otherwise start from beginning
+        if (currentWordIndex >= 0) {
+          playFromWord(currentWordIndex);
+        } else {
+          const utterance = createAudioFromText();
+          window.speechSynthesis.speak(utterance);
+        }
+      }
+      setIsPlaying(true);
+    }
+  };
+
+  // Stop functionality
+  const stopPlayback = () => {
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+    setCurrentWordIndex(-1);
+  };
+
+  // Click to play from position
+  const playFromWord = (wordIndex: number) => {
+    stopPlayback();
+
+    // Create new utterance from the clicked word onwards
+    const words = getWordsWithPositions().filter((w) => !w.isSpace);
+    const remainingText = words
+      .slice(wordIndex)
+      .map((w) => w.word)
+      .join(" ");
+
+    // Remove all square bracket content like [chapter=1], [1], etc.
+    const cleanRemainingText = remainingText.replace(/\[.*?\]/g, "").trim();
+
+    const utterance = new SpeechSynthesisUtterance(cleanRemainingText);
+    utterance.lang =
+      language === "no"
+        ? "nb-NO"
+        : language === "pl"
+          ? "pl-PL"
+          : language === "ne"
+            ? "ne-NP"
+            : "en-US";
+    utterance.rate = playbackRate;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    let currentIndex = wordIndex;
+
+    utterance.onboundary = (event) => {
+      if (event.name === "word") {
+        setCurrentWordIndex(currentIndex);
+        currentIndex++;
+      }
+    };
+
+    utterance.onend = () => {
+      setIsPlaying(false);
+      setCurrentWordIndex(-1);
+    };
+
+    utterance.onpause = () => {
+      setIsPlaying(false);
+    };
+
+    utterance.onresume = () => {
+      setIsPlaying(true);
+    };
+
+    window.speechSynthesis.speak(utterance);
+    setIsPlaying(true);
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  // Update playback rate
+  useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (!isClient) return;
+    
+    if (window.speechSynthesis.speaking && isPlaying) {
+      // Store current position before changing rate
+      const currentPosition = currentWordIndex;
+
+      // Pause current speech
+      window.speechSynthesis.pause();
+
+      // Create new utterance with new rate, starting from current position
+      const words = getWordsWithPositions().filter((w) => !w.isSpace);
+      const remainingText = words
+        .slice(currentPosition)
+        .map((w) => w.word)
+        .join(" ");
+
+      const utterance = new SpeechSynthesisUtterance(remainingText);
+      utterance.lang =
+        language === "no"
+          ? "nb-NO"
+          : language === "pl"
+            ? "pl-PL"
+            : language === "ne"
+              ? "ne-NP"
+              : "en-US";
+      utterance.rate = playbackRate;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+
+      let wordIndex = currentPosition;
+
+      utterance.onboundary = (event) => {
+        if (event.name === "word") {
+          setCurrentWordIndex(wordIndex);
+          wordIndex++;
+        }
+      };
+
+      utterance.onend = () => {
+        setIsPlaying(false);
+        setCurrentWordIndex(-1);
+      };
+
+      utterance.onpause = () => {
+        setIsPlaying(false);
+      };
+
+      utterance.onresume = () => {
+        setIsPlaying(true);
+      };
+
+      // Speak the remaining text with new rate
+      window.speechSynthesis.speak(utterance);
+    }
+  }, [playbackRate]);
+
+  // Show loading state
+  if (isLoading || !ruthText) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+        <div className="text-center">
+          <div className="mb-4 text-2xl text-amber-600">Loading...</div>
+          <div className="text-amber-500">Loading text content</div>
+        </div>
+      </div>
+    );
+  }
+
+  const words = getWordsWithPositions();
+
+  return (
+    <div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+      {/* Top Bar */}
+      <div className="z-40 flex-shrink-0 border-b border-amber-200 bg-white shadow-sm">
+        <div className="mx-auto max-w-6xl px-4 py-3">
+          <div className="flex items-center justify-between">
+            {/* Book Title - Left Side */}
+            <div className="flex items-center space-x-3">
+              <div className="h-8 w-2 rounded-full bg-gradient-to-b from-amber-500 to-orange-500"></div>
+                             <div>
+                 <h2 className="text-lg font-semibold text-amber-900">
+                   {getBookTitle()}
+                 </h2>
+               </div>
+            </div>
+
+            {/* Language Buttons - Right Side */}
+            <div className="flex space-x-2 rounded-lg border border-gray-200 bg-gray-100 pl-2">
+              <span
+                onClick={() => setLanguage("en")}
+                className={`fi fi-us cursor-pointer rounded-sm p-1 text-lg transition-all duration-300 hover:scale-125 hover:drop-shadow-lg ${
+                  language === "en"
+                    ? "text-amber-600 drop-shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              />
+              <span
+                onClick={() => setLanguage("no")}
+                className={`fi fi-no cursor-pointer rounded-sm p-1 text-lg transition-all duration-300 hover:scale-125 hover:drop-shadow-lg ${
+                  language === "no"
+                    ? "text-amber-600 drop-shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              />
+              <span
+                onClick={() => setLanguage("pl")}
+                className={`fi fi-pl cursor-pointer rounded-sm p-1 text-lg transition-all duration-300 hover:scale-125 hover:drop-shadow-lg ${
+                  language === "pl"
+                    ? "text-amber-600 drop-shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              />
+              <span
+                onClick={() => setLanguage("ne")}
+                className={`fi fi-np cursor-pointer rounded-sm p-1 text-lg transition-all duration-300 hover:scale-125 hover:drop-shadow-lg ${
+                  language === "ne"
+                    ? "text-amber-600 drop-shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bible Text Content - Takes remaining space */}
+      <div className="min-h-0 flex-1 px-0 py-0">
+        <div className="mx-auto h-full w-full max-w-5xl">
+          <div className="h-full overflow-hidden rounded-none border-0 bg-white shadow-2xl md:border md:border-amber-100">
+            {/* Text content */}
+            <div
+              className="h-full overflow-y-auto px-4 py-8 md:px-12 md:py-12"
+              ref={textContainerRef}
+            >
+              <div className="prose prose-xl max-w-none">
+                <div className="text-justify font-serif text-lg leading-relaxed text-gray-800">
+                  {words.map((wordObj, index) => {
+                    if (wordObj.isSpace) {
+                      return <span key={index}>{wordObj.word}</span>;
+                    }
+
+                    // Use the word index from the parser
+                    const wordIndex = wordObj.index;
+                    const isCurrentWord = currentWordIndex === wordIndex;
+
+                    return (
+                      <span
+                        key={index}
+                        ref={(el) => {
+                          if (wordIndex >= 0) {
+                            wordRefs.current[wordIndex] = el;
+                          }
+                        }}
+                        onClick={() => {
+                          // Always mark the position
+                          if (wordIndex >= 0) {
+                            setCurrentWordIndex(wordIndex);
+                            // Only play if already playing
+                            if (isPlaying) {
+                              playFromWord(wordIndex);
+                            }
+                          }
+                        }}
+                        className={`cursor-pointer transition-all duration-200 ${
+                          isCurrentWord
+                            ? "rounded bg-amber-300 px-1 py-0.5 text-amber-900 shadow-md"
+                            : "rounded px-1 py-0.5 hover:bg-amber-100 hover:text-amber-800"
+                        }`}
+                      >
+                        {wordObj.word}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed Bottom Context Component */}
+      <div className="z-50 flex-shrink-0">
+        {/* Slider Handle */}
+        <div
+          className="flex h-8 cursor-pointer items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg transition-all duration-200 hover:from-amber-600 hover:to-orange-600"
+          onClick={() => setIsContextOpen(!isContextOpen)}
+        >
+          <div className="flex items-center space-x-2 text-white">
+            <svg
+              className={`h-5 w-5 transition-transform duration-200 ${isContextOpen ? "" : "rotate-180"}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 7l-5 5-5-5"
+              />
+            </svg>
+            <span className="text-sm font-medium">
+              {isContextOpen ? "Hide context" : "Show context"}
+            </span>
+          </div>
+        </div>
+
+        {/* Context Panel */}
+        <div
+          className={`overflow-hidden bg-white transition-all duration-300 ease-in-out ${
+            isContextOpen ? "max-h-[300px]" : "max-h-0"
+          }`}
+        >
+          <div className="mx-auto max-w-6xl">
+            <RuthContext 
+              currentConceptId={currentConceptId}
+              onConceptChange={setCurrentConceptId}
+            />
+          </div>
+        </div>
+
+        {/* Audio Controls - Under Context Component */}
+        <div className="border-t border-amber-200 bg-white shadow-lg">
+          <div className="mx-auto max-w-2xl px-4 py-2">
+            <div className="flex items-center justify-end space-x-4">
+              {/* Reading Position Info - Left Side */}
+              <div className="flex items-center space-x-2">
+                <p className="text-xs font-medium tracking-wide text-amber-500 uppercase">
+                  {(() => {
+                    if (currentWordIndex === -1) {
+                      return "Not started";
+                    }
+
+                    if (isPlaying) {
+                      return "Reading from";
+                    } else {
+                      return "Read from";
+                    }
+                  })()}
+                </p>
+                <p className="text-sm font-medium text-amber-700">
+                  {(() => {
+                    if (currentWordIndex === -1) {
+                      return "Click play to start";
+                    }
+
+                    // Use the new parser to find exact chapter and verse
+                    const position = TextParser.findChapterAndVerse(
+                      ruthText,
+                      currentWordIndex,
+                    );
+                    if (position) {
+                      return `${position.chapter}:${position.verse}`;
+                    }
+
+                    return "Unknown position";
+                  })()}
+                </p>
+              </div>
+
+              {/* Follow Mode Toggle - Eye Icon */}
+              {!followMode && (
+                <button
+                  onClick={() => setFollowMode(true)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500 text-white shadow-lg transition-all duration-200"
+                  title="Turn on follow mode"
+                >
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                </button>
+              )}
+
+              {/* Play/Pause Button */}
+              <button
+                onClick={togglePlayback}
+                className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-amber-600 bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg transition-all duration-200 hover:from-amber-600 hover:to-orange-600 hover:shadow-xl"
+                style={{ minWidth: "48px", minHeight: "48px" }}
+              >
+                {isPlaying ? (
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 9v6m4-6v6"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="ml-0.5 h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

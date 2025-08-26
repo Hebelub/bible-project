@@ -10,7 +10,6 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-
     "generate-audio": "tsx src/scripts/generate-audio.ts",
     "dev": "next dev",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
@@ -30,6 +29,7 @@
     "@trpc/server": "^11.0.0",
     "dotenv": "^17.2.1",
     "drizzle-orm": "^0.41.0",
+    "flag-icons": "^7.5.0",
     "next": "^15.2.3",
     "openai": "^5.12.2",
     "react": "^19.0.0",
